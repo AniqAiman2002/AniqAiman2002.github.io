@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profil Projek | Explore Selangor & Dashboard Demografi Malaysia</title>
+<meta name="description" content="Dua projek web: panduan pelancongan interaktif Selangor dan papan pemuka demografi Malaysia 1970–2026.">
+<script>
+(function(){var t;try{t=localStorage.getItem('tema')}catch(e){}
+if(!t){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#D91C24; --red-d:#9E0F16; --gold:#FFCC00; --navy:#0E2A47; --teal:#2DD4BF;
+  --display:'Bricolage Grotesque','Arial Narrow',Arial,sans-serif;
+  --body:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+[data-theme="dark"]{color-scheme:dark;--bg:#0A1020;--card:#111A2E;--line:#1B2740;--text:#E8EEF8;--mute:#93A1BA;--glow:.5;--hl-a:#FFCC00;--hl-b:#2DD4BF;--chip-t:#FFB3B6;--chip-g:#9BF1E5}
+[data-theme="light"]{color-scheme:light;--bg:#F5F7FC;--card:#FFFFFF;--line:#DCE3F0;--text:#0C1428;--mute:#53617C;--glow:.28;--hl-a:#C4151C;--hl-b:#0B7A6E;--chip-t:#9E0F16;--chip-g:#0B5F56}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:400 1.0625rem/1.65 var(--body);-webkit-font-smoothing:antialiased;transition:background .4s,color .4s;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:8px}
+.wrap{width:min(1180px,100% - 2.5rem);margin-inline:auto}
+
+/* Bar atas */
+.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 80%,transparent);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{font:800 1.15rem var(--display);letter-spacing:-.01em;text-decoration:none}
+.brand i{font-style:normal;background:linear-gradient(90deg,var(--red),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav{display:flex;align-items:center;gap:1.4rem;font-weight:500;font-size:.95rem}
+.nav a{text-decoration:none;color:var(--mute)} .nav a:hover{color:var(--text)}
+.tgl{display:inline-flex;align-items:center;gap:.5rem;font:600 .9rem var(--body);color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:99px;padding:.45rem .9rem .45rem .5rem;cursor:pointer;transition:transform .2s}
+.tgl:hover{transform:scale(1.05)}
+.tgl .ico{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),#FF8A3D);color:#3A2400}
+[data-theme="dark"] .tgl .ico{background:linear-gradient(135deg,#6366F1,#2DD4BF);color:#fff}
+.tgl svg{width:16px;height:16px}
+.tgl .sun{display:none} [data-theme="light"] .tgl .sun{display:block} [data-theme="light"] .tgl .moon{display:none}
+
+/* Hero */
+.hero{position:relative;padding:clamp(3.5rem,9vw,7rem) 0 2.5rem}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:var(--glow);pointer-events:none;z-index:-1}
+.b1{width:420px;height:420px;background:var(--red);top:-80px;left:-120px;animation:drift 14s ease-in-out infinite alternate}
+.b2{width:460px;height:460px;background:var(--teal);top:60px;right:-140px;animation:drift 17s ease-in-out infinite alternate-reverse}
+@keyframes drift{to{transform:translate(70px,50px) scale(1.15)}}
+.pill{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .9rem;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:.9rem;font-weight:500;margin-bottom:1.4rem}
+.pill b{width:8px;height:8px;border-radius:50%;background:#22C55E;box-shadow:0 0 0 4px rgba(34,197,94,.25)}
+.hero h1{font:800 clamp(2.8rem,8vw,6.4rem)/.96 var(--display);letter-spacing:-.035em;max-width:14ch}
+.hero h1 .a{background:linear-gradient(100deg,var(--hl-a),#FF7A3D);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero h1 .b{background:linear-gradient(100deg,var(--hl-b),#60A5FA);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{margin-top:1.5rem;max-width:56ch;color:var(--mute);font-size:1.15rem}
+.hero .cta-row{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2rem}
+.btn{padding:.9rem 1.6rem;border-radius:99px;font-weight:600;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-3px)}
+.btn.g{background:linear-gradient(100deg,var(--red),#F0323A);color:#fff;box-shadow:0 10px 30px -10px var(--red)}
+.btn.t{background:linear-gradient(100deg,#14B8A6,var(--teal));color:#032B26;box-shadow:0 10px 30px -10px #14B8A6}
+
+/* Jalur kata kunci */
+.ticker{margin-top:3rem;border-block:1px solid var(--line);overflow:hidden;white-space:nowrap;padding:.9rem 0}
+.track{display:inline-flex;gap:2.5rem;animation:run 32s linear infinite;font:800 1.3rem var(--display);color:var(--mute)}
+.track span:nth-child(even){color:var(--text)}
+@keyframes run{to{transform:translateX(-50%)}}
+
+/* Dua panel */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:3rem;transition:grid-template-columns .5s cubic-bezier(.2,.8,.2,1)}
+.duo:has(.p1:hover),.duo:has(.p1:focus-within){grid-template-columns:1.25fr 1fr}
+.duo:has(.p2:hover),.duo:has(.p2:focus-within){grid-template-columns:1fr 1.25fr}
+.panel{position:relative;border-radius:28px;padding:clamp(1.5rem,3vw,2.4rem);min-height:540px;display:flex;flex-direction:column;overflow:hidden}
+.p1{background:radial-gradient(120% 90% at 100% 0%,#F0323A 0%,var(--red) 40%,var(--red-d) 100%);color:#fff;box-shadow:0 30px 60px -30px var(--red)}
+.p2{background:radial-gradient(120% 90% at 0% 0%,#1D5384 0%,var(--navy) 55%,#081A2E 100%);color:#E8EEF8;border:1px solid #1E4064;box-shadow:0 30px 60px -30px #14B8A6}
+.panel h2{font:800 clamp(1.8rem,3.2vw,2.6rem)/1.05 var(--display);letter-spacing:-.02em}
+.panel .tag{font-weight:600;font-size:.95rem;opacity:.85;margin-bottom:.6rem}
+.panel .desc{margin-top:.8rem;max-width:44ch;opacity:.92}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1.4rem}
+.chip{font-size:.85rem;font-weight:500;padding:.3rem .75rem;border-radius:99px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22)}
+.spacer{flex:1}
+.go{display:inline-flex;margin-top:1.6rem;font-weight:600;padding:.8rem 1.3rem;border-radius:99px;width:fit-content;text-decoration:none;transition:transform .2s}
+.p1 .go{background:var(--gold);color:#2B1B00} .p2 .go{background:var(--teal);color:#032B26}
+.go:hover{transform:translateX(5px)}
+.ticket{margin-top:1.6rem;display:grid;gap:.5rem}
+.ticket div{display:flex;justify-content:space-between;gap:1rem;padding:.7rem 1rem;border-radius:14px;background:rgba(0,0,0,.22);font-size:.95rem}
+.ticket b{font-weight:600} .ticket small{opacity:.8;white-space:nowrap}
+.viz{display:flex;align-items:center;gap:1.4rem;margin-top:1.6rem;flex-wrap:wrap}
+.donut{width:150px;aspect-ratio:1;border-radius:50%;flex:none;
+  background:conic-gradient(#2DD4BF 0 52.7%,#60A5FA 0 72.6%,#A78BFA 0 83.7%,#F59E0B 0 93.5%,#FB7185 0 99.3%,#94A3B8 0 100%);
+  -webkit-mask:radial-gradient(circle,transparent 46%,#000 47%);mask:radial-gradient(circle,transparent 46%,#000 47%);
+  clip-path:circle(0%);animation:reveal 1.4s .3s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes reveal{to{clip-path:circle(75%)}}
+.legend{list-style:none;padding:0;font-size:.85rem;color:#C9D6EA;display:grid;gap:.15rem}
+.legend i{display:inline-block;width:.7rem;height:.7rem;border-radius:3px;margin-right:.5rem}
+.grow{margin-top:1.4rem;display:grid;gap:.5rem;font-size:.85rem;color:#C9D6EA}
+.grow div{display:grid;grid-template-columns:3rem 1fr;align-items:center;gap:.7rem}
+.bar{height:16px;border-radius:99px;background:linear-gradient(90deg,#2DD4BF,#60A5FA);transform-origin:left;animation:bar 1.4s .3s cubic-bezier(.2,.8,.2,1) both}
+.bar span{display:block;padding-left:.6rem;line-height:16px;font-size:.7rem;font-weight:600;color:#022;white-space:nowrap}
+@keyframes bar{from{transform:scaleX(0)}}
+
+/* Angka */
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;padding:3.5rem 0}
+.nums div{padding:1.4rem;border-radius:22px;background:var(--card);border:1px solid var(--line)}
+.nums strong{display:block;font:800 clamp(2rem,4vw,3rem)/1 var(--display);letter-spacing:-.02em;background:linear-gradient(100deg,var(--hl-a),var(--hl-b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nums span{color:var(--mute);font-size:.95rem}
+
+/* Seksyen projek */
+.proj{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(1.5rem,5vw,4.5rem);padding:clamp(3rem,7vw,5.5rem) 0;border-top:1px solid var(--line)}
+.proj h3{font:800 clamp(1.9rem,3.6vw,2.8rem)/1.05 var(--display);letter-spacing:-.02em}
+.proj .sub{margin-top:.9rem;color:var(--mute)}
+.stripe{display:inline-block;width:64px;height:7px;border-radius:9px;margin-bottom:1.2rem}
+.s1 .stripe{background:linear-gradient(90deg,var(--red),var(--gold))}
+.s2 .stripe{background:linear-gradient(90deg,#60A5FA,var(--teal))}
+.feat{list-style:none;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.feat li{padding:1.1rem 1.2rem;border-radius:18px;background:var(--card);border:1px solid var(--line);transition:transform .25s,box-shadow .25s}
+.feat li:hover{transform:translateY(-4px) rotate(-.6deg);box-shadow:0 18px 40px -22px var(--text)}
+.feat b{display:block;font-weight:600;margin-bottom:.2rem}
+.feat span{color:var(--mute);font-size:.95rem;line-height:1.5}
+.s1 .feat li{border-left:5px solid var(--red)} .s2 .feat li{border-left:5px solid var(--teal)}
+
+/* Teknologi */
+.tech{padding:clamp(3rem,7vw,5rem) 0;border-top:1px solid var(--line)}
+.tech h3{font:800 clamp(1.8rem,3.4vw,2.6rem)/1.05 var(--display);letter-spacing:-.02em;margin-bottom:2rem}
+.tech table{width:100%;border-collapse:collapse}
+.tech th,.tech td{text-align:left;padding:1rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+.tech th{font-weight:600;white-space:nowrap} .tech td{color:var(--mute)}
+.use{display:inline-block;font-size:.8rem;font-weight:600;padding:.15rem .6rem;border-radius:99px;margin-right:.3rem;white-space:nowrap}
+.u1{background:rgba(217,28,36,.16);color:var(--chip-t)} .u2{background:rgba(20,184,166,.18);color:var(--chip-g)}
+
+/* CTA */
+.cta{margin-bottom:3rem;border-radius:32px;padding:clamp(2rem,6vw,4rem);text-align:center;color:#fff;background:linear-gradient(100deg,var(--red-d),var(--red) 35%,#18466F 65%,var(--navy))}
+.cta h3{font:800 clamp(1.9rem,4.2vw,3.2rem)/1.05 var(--display);letter-spacing:-.02em;max-width:18ch;margin:0 auto}
+.cta p{margin:1rem auto 0;max-width:46ch;opacity:.92}
+.cta .btns{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;margin-top:1.8rem}
+.cta .btn.g{background:var(--gold);color:#2B1B00;box-shadow:none} .cta .btn.t{background:var(--teal);box-shadow:none}
+footer{padding:0 0 3rem;color:var(--mute);font-size:.9rem;text-align:center}
+
+@media (max-width:860px){
+  .nav a{display:none}
+  .duo,.duo:has(.p1:hover),.duo:has(.p2:hover){grid-template-columns:1fr}
+  .panel{min-height:0} .proj{grid-template-columns:1fr} .feat{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .donut{clip-path:none}
+}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap">
+  <a class="brand" href="#">Profil <i>Projek</i></a>
+  <nav class="nav" aria-label="Navigasi utama">
+    <a href="#projek">Projek</a><a href="#teknologi">Teknologi</a>
+    <button class="tgl" id="tgl" type="button" aria-label="Tukar mod cerah atau malam">
+      <span class="ico">
+        <svg class="moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+      </span>
+      <span id="tglTxt">Mod malam</span>
+    </button>
+  </nav>
+</div></div>
+
+<header class="hero wrap">
+  <i class="blob b1"></i><i class="blob b2"></i>
+  <p class="pill"><b></b>2 projek siap, boleh dicuba sekarang</p>
+  <h1>Satu <span class="a">Selangor</span> untuk dijelajah, satu <span class="b">Malaysia</span> untuk dibaca.</h1>
+  <p class="lead">Dua laman web yang saya bina: satu untuk merancang percutian di Selangor, satu lagi untuk memahami 56 tahun data penduduk Malaysia.</p>
+  <div class="cta-row">
+    <a class="btn g" href="lab1/lab1.html">Jelajah Selangor</a>
+    <a class="btn t" href="lab2/lab2.html">Lihat Data Malaysia</a>
+  </div>
+
+  <div class="ticker" aria-hidden="true"><div class="track">
+    <span>Sky Mirror</span><span>Sekinchan</span><span>Batu Caves</span><span>Chart.js</span><span>Tailwind CSS</span><span>Data DOSM</span><span>Mod Gelap</span><span>Perancang Trip</span>
+    <span>Sky Mirror</span><span>Sekinchan</span><span>Batu Caves</span><span>Chart.js</span><span>Tailwind CSS</span><span>Data DOSM</span><span>Mod Gelap</span><span>Perancang Trip</span>
+  </div></div>
+
+  <div class="duo" id="projek">
+    <article class="panel p1">
+      <p class="tag">Projek Lab 1 &bull; Pelancongan</p>
+      <h2>Explore Selangor</h2>
+      <p class="desc">Panduan interaktif dengan 12 destinasi. Cari, tapis ikut daerah, kemudian susun terus ke dalam perancang perjalanan anda.</p>
+      <div class="ticket">
+        <div><b>Sky Mirror Kuala Selangor</b><small>Alam Semula Jadi</small></div>
+        <div><b>Sawah Padi Sekinchan</b><small>Agro &amp; Makanan</small></div>
+        <div><b>Batu Caves, Tangga Pelangi</b><small>Warisan &amp; Budaya</small></div>
+      </div>
+      <div class="chips"><span class="chip">12 destinasi</span><span class="chip">9 daerah</span><span class="chip">Mod gelap</span></div>
+      <div class="spacer"></div>
+      <a class="go" href="lab1/lab1.html">Buka Explore Selangor</a>
+    </article>
+
+    <article class="panel p2">
+      <p class="tag">Projek Lab 2 &bull; Data &amp; Visualisasi</p>
+      <h2>Papan Pemuka Demografi Malaysia</h2>
+      <p class="desc">Empat carta dan jadual boleh dicari yang membaca data DOSM dari 1970 hingga 2026.</p>
+      <div class="viz">
+        <div class="donut" role="img" aria-label="Komposisi etnik dan kewarganegaraan Malaysia 2026"></div>
+        <ul class="legend">
+          <li><i style="background:#2DD4BF"></i>Bumi Melayu 52.7%</li>
+          <li><i style="background:#60A5FA"></i>Cina 19.9%</li>
+          <li><i style="background:#A78BFA"></i>Bumi Lain 11.1%</li>
+          <li><i style="background:#F59E0B"></i>Bukan Warganegara 9.8%</li>
+          <li><i style="background:#FB7185"></i>India 5.8%</li>
+          <li><i style="background:#94A3B8"></i>Warganegara Lain 0.7%</li>
+        </ul>
+      </div>
+      <div class="grow">
+        <div>1970<span class="bar" style="width:31.6%"><span>10.88 juta</span></span></div>
+        <div>2026<span class="bar" style="width:100%"><span>34.39 juta</span></span></div>
+      </div>
+      <div class="spacer"></div>
+      <a class="go" href="lab2/lab2.html">Buka Papan Pemuka</a>
+    </article>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="nums" aria-label="Ringkasan angka">
+    <div><strong data-to="2">2</strong><span>projek web siap</span></div>
+    <div><strong data-to="12">12</strong><span>destinasi Selangor</span></div>
+    <div><strong data-to="17814">17,814</strong><span>rekod data DOSM</span></div>
+    <div><strong data-to="4">4</strong><span>carta interaktif</span></div>
+    <div><strong data-to="216" data-pre="+" data-suf="%">+216%</strong><span>penduduk bertambah sejak 1970</span></div>
+  </section>
+
+  <section class="proj s1" aria-labelledby="t1">
+    <div>
+      <span class="stripe"></span>
+      <h3 id="t1">Explore Selangor: dari idea ke itinerari</h3>
+      <p class="sub">Pelancong biasanya ada senarai tempat, tapi tiada cara mudah menyusunnya. Projek ini menggabungkan carian, maklumat lengkap dan perancang trip dalam satu halaman.</p>
+    </div>
+    <ul class="feat">
+      <li><b>Cari dan tapis</b><span>Cari mengikut nama atau aktiviti, tapis ikut 5 kategori dan 9 daerah.</span></li>
+      <li><b>Butiran destinasi</b><span>Harga, waktu operasi, penilaian, sorotan dan tip setempat dalam satu tetingkap.</span></li>
+      <li><b>Perancang perjalanan</b><span>Tambah destinasi ke laci perancang, kemudian salin itinerari anda.</span></li>
+      <li><b>Info daerah dan tips</b><span>Makanan wajib cuba, pengangkutan, masa terbaik melawat dan etika pakaian.</span></li>
+      <li><b>Mod gelap</b><span>Tema terang atau gelap, pilihan disimpan dalam pelayar.</span></li>
+      <li><b>Panduan GitHub Pages</b><span>Langkah menyimpan dan menghos laman web terus dari dalam aplikasi.</span></li>
+    </ul>
+  </section>
+
+  <section class="proj s2" aria-labelledby="t2">
+    <div>
+      <span class="stripe"></span>
+      <h3 id="t2">Papan pemuka yang bercerita dengan data</h3>
+      <p class="sub">Angka mentah sukar difahami. Papan pemuka ini mengubah data penduduk 1970 hingga 2026 kepada carta dan penemuan yang jelas, seperti Malaysia sudah memasuki fasa negara menua.</p>
+    </div>
+    <ul class="feat">
+      <li><b>Kad ringkasan</b><span>Penduduk 34.39 juta, tenaga kerja 24.22 juta (70.4%), warga emas 8.4%.</span></li>
+      <li><b>Trend pertumbuhan</b><span>Carta garis dari 10.88 juta (1970) kepada 34.39 juta (2026).</span></li>
+      <li><b>Piramid penduduk</b><span>Struktur umur 2026 mengikut kohort 5 tahun, lelaki dan perempuan.</span></li>
+      <li><b>Komposisi etnik</b><span>Carta donat enam kumpulan, termasuk 3.37 juta bukan warganegara.</span></li>
+      <li><b>Nisbah jantina</b><span>Evolusi bilangan lelaki bagi setiap 100 perempuan, kini 110.2.</span></li>
+      <li><b>Jadual boleh dicari</b><span>Data tonggak setiap tahun dengan carian untuk semakan pantas.</span></li>
+    </ul>
+  </section>
+
+  <section class="tech" id="teknologi" aria-labelledby="t3">
+    <h3 id="t3">Teknologi di sebalik kedua-dua projek</h3>
+    <table><tbody>
+      <tr><th scope="row">Tailwind CSS</th><td>Reka bentuk responsif tanpa menulis CSS panjang.</td><td><span class="use u1">Lab 1</span><span class="use u2">Lab 2</span></td></tr>
+      <tr><th scope="row">JavaScript</th><td>Penapis, modal, perancang trip, carian jadual dan mod gelap.</td><td><span class="use u1">Lab 1</span><span class="use u2">Lab 2</span></td></tr>
+      <tr><th scope="row">Chart.js</th><td>Carta garis, bar dan donat yang interaktif.</td><td><span class="use u2">Lab 2</span></td></tr>
+      <tr><th scope="row">Font Awesome</th><td>Ikon untuk navigasi, kategori dan butang tindakan.</td><td><span class="use u1">Lab 1</span></td></tr>
+      <tr><th scope="row">Google Fonts</th><td>Plus Jakarta Sans dan Inter untuk paparan yang kemas.</td><td><span class="use u1">Lab 1</span><span class="use u2">Lab 2</span></td></tr>
+      <tr><th scope="row">Data DOSM</th><td>Rekod rasmi Jabatan Perangkaan Malaysia.</td><td><span class="use u2">Lab 2</span></td></tr>
+    </tbody></table>
+  </section>
+
+  <section class="cta">
+    <h3>Pilih satu dan terokai sendiri</h3>
+    <p>Kedua-dua projek dibuka terus dalam pelayar, tanpa pemasangan.</p>
+    <div class="btns">
+      <a class="btn g" href="lab1/lab1.html">Explore Selangor</a>
+      <a class="btn t" href="lab2/lab2.html">Papan Pemuka Demografi</a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">&copy; 2026 Profil Projek Lab. Sumber data demografi: Jabatan Perangkaan Malaysia (DOSM).</footer>
+
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('tgl'), txt=document.getElementById('tglTxt');
+  function label(){txt.textContent=root.getAttribute('data-theme')==='dark'?'Mod malam':'Mod cerah'}
+  label();
+  btn.addEventListener('click',function(){
+    var n=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    root.setAttribute('data-theme',n);
+    try{localStorage.setItem('tema',n)}catch(e){}
+    label();
+  });
+  /* Kira naik angka sekali sahaja apabila kelihatan */
+  var els=document.querySelectorAll('[data-to]');
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))return;
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(!e.isIntersecting)return; io.unobserve(e.target);
+    var el=e.target,to=+el.dataset.to,pre=el.dataset.pre||'',suf=el.dataset.suf||'',t0=performance.now();
+    (function tick(t){var p=Math.min((t-t0)/1400,1),v=Math.round(to*(1-Math.pow(1-p,3)));
+      el.textContent=pre+v.toLocaleString('en-US')+suf; if(p<1)requestAnimationFrame(tick)})(t0);
+  })},{threshold:.6});
+  els.forEach(function(el){io.observe(el)});
+})();
+</script>
+</body>
+</html>
