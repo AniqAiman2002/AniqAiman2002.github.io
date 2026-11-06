@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrivia - Kuiz Minda Pintar</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-short': 'bounce 0.6s ease-in-out 1',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome untuk Ikonik Antaramuka -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glassmorphism subtle effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-slate-800 min-h-screen flex flex-col justify-between p-3 sm:p-6 select-none">
+
+    <!-- Header / Nav -->
+    <header class="w-full max-w-2xl mx-auto flex items-center justify-between py-2 px-4 glass-panel rounded-2xl shadow-lg border border-white/20 mb-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+                <i class="fa-solid fa-graduation-cap text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">EduTrivia</h1>
+                <p class="text-xs text-slate-500 font-medium">Kuiz Pembelajaran Interaktif</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <!-- Audio Toggle -->
+            <button id="btnSoundToggle" class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition shadow-sm active:scale-95" title="Buka/Tutup Bunyi">
+                <i id="soundIcon" class="fa-solid fa-volume-high text-sm"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container Card -->
+    <main class="w-full max-w-2xl mx-auto flex-1 flex flex-col justify-center">
+
+        <!-- ==================== 1. SKRIN UTAMA (START SCREEN) ==================== -->
+        <section id="screenStart" class="glass-panel p-6 sm:p-8 rounded-3xl shadow-2xl transition-all duration-300">
+            <div class="text-center mb-6">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 mb-3">
+                    <i class="fa-solid fa-bolt mr-1.5 text-amber-500"></i> Speed & Knowledge
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">Asah Fikiran & Uji Kepantasan</h2>
+                <p class="text-slate-600 text-sm max-w-md mx-auto">
+                    Jawab soalan dengan pantas untuk kumpul mata kombo <span class="font-semibold text-indigo-600">Streak Multiplier</span> sebelum masa 15 saat tamat!
+                </p>
+            </div>
+
+            <!-- Kategori Pilihan -->
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">
+                    Pilih Kategori Pembelajaran:
+                </label>
+                <div class="grid grid-cols-2 gap-2.5 sm:gap-3" id="categoryGrid">
+                    <button type="button" data-category="all" class="category-btn active flex items-center p-3 rounded-2xl border-2 border-indigo-600 bg-indigo-50/70 text-indigo-900 font-semibold text-sm transition-all shadow-sm">
+                        <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center mr-2.5 shrink-0">
+                            <i class="fa-solid fa-layer-group text-xs"></i>
+                        </span>
+                        <span class="text-left leading-tight text-xs sm:text-sm">Semua Topik</span>
+                    </button>
+                    <button type="button" data-category="sains" class="category-btn flex items-center p-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-sm hover:border-indigo-300 transition-all shadow-sm">
+                        <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mr-2.5 shrink-0">
+                            <i class="fa-solid fa-flask text-xs"></i>
+                        </span>
+                        <span class="text-left leading-tight text-xs sm:text-sm">Sains & Alam</span>
+                    </button>
+                    <button type="button" data-category="sejarah" class="category-btn flex items-center p-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-sm hover:border-indigo-300 transition-all shadow-sm">
+                        <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mr-2.5 shrink-0">
+                            <i class="fa-solid fa-landmark text-xs"></i>
+                        </span>
+                        <span class="text-left leading-tight text-xs sm:text-sm">Sejarah & Geo</span>
+                    </button>
+                    <button type="button" data-category="matematik" class="category-btn flex items-center p-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-sm hover:border-indigo-300 transition-all shadow-sm">
+                        <span class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center mr-2.5 shrink-0">
+                            <i class="fa-solid fa-calculator text-xs"></i>
+                        </span>
+                        <span class="text-left leading-tight text-xs sm:text-sm">Matematik</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Petua Ringkas -->
+            <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 mb-6 text-xs text-slate-600 space-y-1.5">
+                <div class="flex items-center text-slate-700 font-semibold mb-1">
+                    <i class="fa-regular fa-lightbulb text-amber-500 mr-2 text-sm"></i> Panduan Bermain:
+                </div>
+                <p>• 10 soalan terpilih secara rawak untuk setiap sesi kuiz.</p>
+                <p>• Setiap soalan diberi <strong>15 saat</strong>. Semakin cepat anda jawab, semakin tinggi skor.</p>
+                <p>• Jawapan berturut-turut betul mengaktifkan bonus <strong>Combo 1.5x, 2.0x hingga 3.0x</strong>!</p>
+            </div>
+
+            <!-- Butang Mula -->
+            <button id="btnStartGame" class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 text-white font-bold text-base sm:text-lg shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center space-x-2">
+                <span>Mula Kuiz Sekarang</span>
+                <i class="fa-solid fa-arrow-right text-sm"></i>
+            </button>
+        </section>
+
+
+        <!-- ==================== 2. SKRIN PERMAINAN (QUIZ PLAY SCREEN) ==================== -->
+        <section id="screenQuiz" class="glass-panel p-5 sm:p-7 rounded-3xl shadow-2xl hidden flex-col transition-all duration-200">
+            
+            <!-- Bilah Atas Status & Skor -->
+            <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
+                <!-- Status Soalan & Kategori -->
+                <div>
+                    <span id="badgeCategory" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 uppercase">
+                        Sains
+                    </span>
+                    <div class="text-xs sm:text-sm font-bold text-slate-500 mt-1">
+                        Soalan <span id="currentQuestionNum" class="text-slate-900 font-extrabold text-base">1</span> / <span id="totalQuestionsCount">10</span>
+                    </div>
+                </div>
+
+                <!-- Kombo Streak -->
+                <div id="streakBox" class="flex items-center space-x-1.5 bg-amber-50 border border-amber-200 px-3 py-1 rounded-xl text-amber-700 font-bold text-xs shadow-xs">
+                    <i class="fa-solid fa-fire text-amber-500 text-sm animate-bounce-short"></i>
+                    <span>Combo: <span id="streakCount">0</span>x</span>
+                </div>
+
+                <!-- Paparan Skor Semasa -->
+                <div class="text-right">
+                    <span class="text-xs text-slate-400 font-medium block">Mata</span>
+                    <span id="currentScore" class="text-lg sm:text-xl font-black text-indigo-600 font-mono">0</span>
+                </div>
+            </div>
+
+            <!-- Bar Pemasa Visual -->
+            <div class="mb-5">
+                <div class="flex justify-between items-center text-xs font-semibold text-slate-500 mb-1.5">
+                    <span class="flex items-center">
+                        <i class="fa-regular fa-clock mr-1 text-slate-400"></i> Baki Masa
+                    </span>
+                    <span id="timerText" class="font-mono font-bold text-slate-700 text-sm">15.0s</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden shadow-inner">
+                    <div id="timerBar" class="h-full bg-emerald-500 rounded-full transition-all duration-100 ease-linear w-full"></div>
+                </div>
+            </div>
+
+            <!-- Kotak Teks Soalan -->
+            <div class="min-h-[90px] sm:min-h-[110px] flex items-center justify-center text-center px-2 py-4 bg-slate-50/80 rounded-2xl border border-slate-200/90 mb-5">
+                <h3 id="questionText" class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                    Memuatkan soalan...
+                </h3>
+            </div>
+
+            <!-- Pilihan Jawapan (A, B, C, D) -->
+            <div id="answersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <!-- Dijana melalui JavaScript -->
+            </div>
+
+            <!-- Kotak Penjelasan / Pembelajaran Pantas (Selepas Jawab) -->
+            <div id="feedbackBox" class="hidden rounded-2xl p-4 border transition-all duration-300 mb-2">
+                <div class="flex items-start space-x-2.5">
+                    <div id="feedbackIcon" class="mt-0.5 text-base shrink-0"></div>
+                    <div class="flex-1">
+                        <h4 id="feedbackTitle" class="font-bold text-sm leading-tight"></h4>
+                        <p id="feedbackExplanation" class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed"></p>
+                    </div>
+                </div>
+                <!-- Butang Soalan Seterusnya -->
+                <button id="btnNextQuestion" class="mt-3 w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm transition flex items-center justify-center space-x-1.5">
+                    <span>Soalan Seterusnya</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+
+        </section>
+
+
+        <!-- ==================== 3. SKRIN KEPUTUSAN (RESULT SCREEN) ==================== -->
+        <section id="screenResult" class="glass-panel p-6 sm:p-8 rounded-3xl shadow-2xl hidden flex-col transition-all duration-300">
+            <div class="text-center mb-6">
+                <!-- Lencana Pencapaian -->
+                <div id="resultBadgeIcon" class="w-20 h-20 mx-auto rounded-3xl bg-indigo-50 border-2 border-indigo-200 flex items-center justify-center text-3xl shadow-lg mb-3">
+                    🏆
+                </div>
+                <h2 id="resultTitle" class="text-2xl sm:text-3xl font-black text-slate-900 mb-1">Hebat Sekali!</h2>
+                <p id="resultRankName" class="text-sm font-semibold text-indigo-600 tracking-wide uppercase">Cendekiawan Pintar</p>
+            </div>
+
+            <!-- Statistik Keputusan -->
+            <div class="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
+                <div class="bg-slate-50 border border-slate-200 p-3 rounded-2xl text-center">
+                    <span class="text-[11px] font-semibold text-slate-400 block uppercase">Jumlah Skor</span>
+                    <span id="finalScore" class="text-xl sm:text-2xl font-black text-indigo-600 font-mono">0</span>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-3 rounded-2xl text-center">
+                    <span class="text-[11px] font-semibold text-slate-400 block uppercase">Ketepatan</span>
+                    <span id="finalAccuracy" class="text-xl sm:text-2xl font-black text-emerald-600 font-mono">0%</span>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-3 rounded-2xl text-center">
+                    <span class="text-[11px] font-semibold text-slate-400 block uppercase">Streak Tertinggi</span>
+                    <span id="finalMaxStreak" class="text-xl sm:text-2xl font-black text-amber-500 font-mono">0</span>
+                </div>
+            </div>
+
+            <!-- Ringkasan Ringkas Jawapan -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Ringkasan Soalan Sesi Ini:</span>
+                    <span id="summaryRatio" class="text-xs font-semibold text-slate-500">0 Betul</span>
+                </div>
+                <div id="summaryList" class="max-h-48 overflow-y-auto space-y-2 pr-1 text-xs">
+                    <!-- Senarai diisi secara automatik -->
+                </div>
+            </div>
+
+            <!-- Butang Aksi (Main Semula & Kongsi) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button id="btnPlayAgain" class="py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-2 active:scale-98">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Main Semula</span>
+                </button>
+                <button id="btnShareResult" class="py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-sm transition flex items-center justify-center space-x-2 active:scale-98">
+                    <i class="fa-solid fa-share-nodes text-slate-500"></i>
+                    <span id="shareBtnText">Salin Keputusan</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Mini -->
+    <footer class="w-full max-w-2xl mx-auto text-center py-3 text-xs text-slate-400">
+        EduTrivia &copy; Aplikasi Kuiz Pembelajaran Berasaskan Web. Dikuasakan oleh Web Audio API.
+    </footer>
+
+    <!-- Notifikasi Toast (Salin Berjaya) -->
+    <div id="toastMessage" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-2xl opacity-0 pointer-events-none transition-all duration-300 flex items-center space-x-2 z-50">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastText">Keputusan berjaya disalin ke papan keratan!</span>
+    </div>
+
+    <!-- ==================== JAVASCRIPT GAME LOGIC ==================== -->
+    <script>
+        /* ==========================================================
+           1. MODUL AUDIO (Web Audio API - Synthesized Sounds)
+           ========================================================== */
+        class SoundFX {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        this.ctx = new AudioContext();
+                    }
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.1) {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+                    gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch (e) {
+                    console.warn("Audio play error", e);
+                }
+            }
+
+            // Bunyi klik butang biasa
+            click() {
+                this.playTone(600, 'sine', 0.05, 0.08);
+            }
+
+            // Bunyi jawapan betul (nada ceria dua tingkat)
+            correct() {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                
+                // Melodi C5 ke G5
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(783.99, now + 0.1);
+
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(now + 0.35);
+            }
+
+            // Bunyi jawapan salah (nada rendah berdengung)
+            wrong() {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.exponentialRampToValueAtTime(90, now + 0.25);
+
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(now + 0.25);
+            }
+
+            // Bunyi masa hampir habis (detik jam)
+            tick() {
+                this.playTone(850, 'square', 0.03, 0.03);
+            }
+
+            // Bunyi selesai sesi / pemenang
+            finish() {
+                if (!this.enabled) return;
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, idx) => {
+                    setTimeout(() => {
+                        this.playTone(freq, 'triangle', 0.25, 0.12);
+                    }, idx * 120);
+                });
+            }
+        }
+
+        const sound = new SoundFX();
+
+        /* ==========================================================
+           2. BANK SOALAN PEMBELAJARAN (20 Soalan Pelbagai Topik)
+           ========================================================== */
+        const QUESTION_BANK = [
+            // SAINS & ALAM
+            {
+                category: 'sains',
+                categoryLabel: 'Sains & Alam',
+                question: 'Apakah proses tumbuhan menghasilkan makanan menggunakan cahaya matahari?',
+                answers: ['Fotosintesis', 'Respirasi', 'Transpirasi', 'Penapaian'],
+                correct: 0,
+                fact: 'Fotosintesis menghasilkan gas oksigen dan glukosa menggunakan klorofil serta karbon dioksida.'
+            },
+            {
+                category: 'sains',
+                categoryLabel: 'Sains & Alam',
+                question: 'Planet manakah yang paling dekat dengan Matahari dalam sistem suria?',
+                answers: ['Zuhrah', 'Utarid', 'Marikh', 'Bumi'],
+                correct: 1,
+                fact: 'Utarid (Mercury) mengambil masa hanya sekitar 88 hari Bumi untuk mengelilingi Matahari.'
+            },
+            {
+                category: 'sains',
+                categoryLabel: 'Sains & Alam',
+                question: 'Gas apakah yang membentuk sebahagian besar atmosfera Bumi?',
+                answers: ['Oksigen', 'Karbon Dioksida', 'Nitrogen', 'Hidrogen'],
+                correct: 2,
+                fact: 'Nitrogen membentuk kira-kira 78% atmosfera Bumi manakala Oksigen sekitar 21%.'
+            },
+            {
+                category: 'sains',
+                categoryLabel: 'Sains & Alam',
+                question: 'Apakah organ dalam badan manusia yang bertanggungjawab mengepam darah ke seluruh tubuh?',
+                answers: ['Paru-paru', 'Hati', 'Buah Pinggang', 'Jantung'],
+                correct: 3,
+                fact: 'Jantung manusia berdegup purata 100,000 kali sehari untuk mengedarkan oksigen dan nutrien.'
+            },
+            {
+                category: 'sains',
+                categoryLabel: 'Sains & Alam',
+                question: 'Apakah nama daya semula jadi yang menarik objek ke pusat Bumi?',
+                answers: ['Daya Geseran', 'Daya Tarikan Graviti', 'Daya Apungan', 'Daya Magnet'],
+                correct: 1,
+                fact: 'Daya graviti membolehkan manusia kekal berpijak di bumi dan memastikan orbit bulan stabil.'
+            },
+
+            // SEJARAH & GEOGRAFI
+            {
+                category: 'sejarah',
+                categoryLabel: 'Sejarah & Geo',
+                question: 'Pada tahun berapakah Tanah Melayu mencapai kemerdekaan?',
+                answers: ['1955', '1957', '1963', '1965'],
+                correct: 1,
+                fact: 'Kemerdekaan diisytiharkan oleh Tunku Abdul Rahman di Stadium Merdeka pada 31 Ogos 1957.'
+            },
+            {
+                category: 'sejarah',
+                categoryLabel: 'Sejarah & Geo',
+                question: 'Apakah sungai yang terpanjang di Malaysia?',
+                answers: ['Sungai Pahang', 'Sungai Rajang', 'Sungai Perak', 'Sungai Kinabatangan'],
+                correct: 1,
+                fact: 'Sungai Rajang di Sarawak mempunyai panjang kira-kira 563 km menjadikannya paling panjang di Malaysia.'
+            },
+            {
+                category: 'sejarah',
+                categoryLabel: 'Sejarah & Geo',
+                question: 'Apakah ibu negara bagi negara Jepun?',
+                answers: ['Osaka', 'Kyoto', 'Tokyo', 'Hiroshima'],
+                correct: 2,
+                fact: 'Tokyo merupakan salah satu kawasan metropolitan terpadat di dunia dan pusat inovasi teknologi.'
+            },
+            {
+                category: 'sejarah',
+                categoryLabel: 'Sejarah & Geo',
+                question: 'Gunung Kinabalu yang tertinggi di Malaysia terletak di negeri mana?',
+                answers: ['Sarawak', 'Pahang', 'Perak', 'Sabah'],
+                correct: 3,
+                fact: 'Gunung Kinabalu mempunyai ketinggian 4,095 meter dari aras laut dan merupakan Tapak Warisan UNESCO.'
+            },
+            {
+                category: 'sejarah',
+                categoryLabel: 'Sejarah & Geo',
+                question: 'Benua manakah yang terbesar di dunia dari segi saiz keluasan tanah?',
+                answers: ['Afrika', 'Asia', 'Amerika Utara', 'Eropah'],
+                correct: 1,
+                fact: 'Benua Asia merangkumi kira-kira 30% daripada keseluruhan kawasan daratan Bumi.'
+            },
+
+            // MATEMATIK & LOGIK
+            {
+                category: 'matematik',
+                categoryLabel: 'Matematik',
+                question: 'Berapakah hasil darab: 12 × 8?',
+                answers: ['86', '94', '96', '108'],
+                correct: 2,
+                fact: '12 didarab dengan 8 bersamaan dengan 96.'
+            },
+            {
+                category: 'matematik',
+                categoryLabel: 'Matematik',
+                question: 'Berapakah jumlah sudut pedalaman bagi sebuah bentuk segi tiga?',
+                answers: ['90 darjah', '180 darjah', '270 darjah', '360 darjah'],
+                correct: 1,
+                fact: 'Sebarang jenis segi tiga (sama sisi, sama kaki atau bersudut tegak) mempunyai jumlah sudut 180°.'
+            },
+            {
+                category: 'matematik',
+                categoryLabel: 'Matematik',
+                question: 'Nombor perdana ialah nombor yang hanya boleh dibahagi dengan 1 dan dirinya sendiri. Manakah nombor perdana?',
+                answers: ['9', '15', '21', '23'],
+                correct: 3,
+                fact: '23 adalah nombor perdana kerana tiada nombor lain yang boleh membahagikannya secara tepat.'
+            },
+            {
+                category: 'matematik',
+                categoryLabel: 'Matematik',
+                question: 'Selesaikan persamaan: (25 + 15) ÷ 2?',
+                answers: ['20', '30', '15', '40'],
+                correct: 0,
+                fact: 'Selesaikan tanda kurungan dahulu: 25 + 15 = 40, kemudian 40 ÷ 2 = 20.'
+            },
+            {
+                category: 'matematik',
+                categoryLabel: 'Matematik',
+                question: 'Berapakah punca kuasa dua bagi nombor 144 (√144)?',
+                answers: ['11', '12', '14', '16'],
+                correct: 1,
+                fact: '12 × 12 = 144, jadi punca kuasa dua bagi 144 adalah 12.'
+            },
+
+            // PENGETAHUAN AM & BAHASA
+            {
+                category: 'sains',
+                categoryLabel: 'Pengetahuan Am',
+                question: 'Apakah mamalia terbesar yang hidup di lautan mahupun di bumi?',
+                answers: ['Ikan Jerung Putih', 'Gajah Afrika', 'Paus Biru', 'Sotong Gergasi'],
+                correct: 2,
+                fact: 'Paus biru boleh membesar sehingga 30 meter panjang dan beratnya mencecah 180 tan metrik.'
+            },
+            {
+                category: 'sejarah',
+                categoryLabel: 'Pengetahuan Am',
+                question: 'Bunga raya dipilih sebagai Bunga Kebangsaan Malaysia. Berapakah kelopak yang ada padanya?',
+                answers: ['4 kelopak', '5 kelopak', '6 kelopak', '7 kelopak'],
+                correct: 1,
+                fact: 'Lima kelopak bunga raya melambangkan 5 Prinsip Rukun Negara Malaysia.'
+            },
+            {
+                category: 'matematik',
+                categoryLabel: 'Logik & Bahasa',
+                question: 'Antara berikut, manakah peribahasa yang membawa maksud bersatu padu?',
+                answers: ['Bagai aur dengan tebing', 'Kera mendapat bunga', 'Bagai melepaskan batuk di tangga', 'Ada udang di sebalik batu'],
+                correct: 0,
+                fact: 'Peribahasa "Bagai aur dengan tebing" menggambarkan kerjasama erat dan saling membantu.'
+            },
+            {
+                category: 'sains',
+                categoryLabel: 'Sains Komputer',
+                question: 'Dalam sains komputer, unit data terkecil yang bernilai 0 atau 1 dipanggil apa?',
+                answers: ['Byte', 'Bit', 'Pixel', 'Hertz'],
+                correct: 1,
+                fact: 'Bit ialah singkatan bagi "Binary Digit". 8 bit membentuk 1 Byte.'
+            },
+            {
+                category: 'sejarah',
+                categoryLabel: 'Geografi Am',
+                question: 'Lautan manakah yang paling luas di permukaan bumi?',
+                answers: ['Lautan Atlantik', 'Lautan Hindi', 'Lautan Pasifik', 'Lautan Artik'],
+                correct: 2,
+                fact: 'Lautan Pasifik merangkumi lebih daripada 30% permukaan bumi dan lebih luas daripada gabungan seluruh daratan.'
+            }
+        ];
+
+        /* ==========================================================
+           3. KEADAAN PERMAINAN (GAME STATE)
+           ========================================================== */
+        const QUESTION_TIME_LIMIT = 15; // 15 saat setiap soalan
+        const QUESTIONS_PER_GAME = 10;
+
+        let selectedCategory = 'all';
+        let activeQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let correctAnswersCount = 0;
+        let userLogs = []; // Untuk simpan rumusan soalan
+
+        let timerInterval = null;
+        let timeLeft = QUESTION_TIME_LIMIT;
+        let isAnswerLocked = false;
+
+        /* ==========================================================
+           4. DOM ELEMENTS
+           ========================================================== */
+        // Skrin
+        const screenStart = document.getElementById('screenStart');
+        const screenQuiz = document.getElementById('screenQuiz');
+        const screenResult = document.getElementById('screenResult');
+
+        // Nav & Setting
+        const btnSoundToggle = document.getElementById('btnSoundToggle');
+        const soundIcon = document.getElementById('soundIcon');
+
+        // Butang Mula & Kategori
+        const categoryGrid = document.getElementById('categoryGrid');
+        const btnStartGame = document.getElementById('btnStartGame');
+
+        // Elemen Kuiz
+        const badgeCategory = document.getElementById('badgeCategory');
+        const currentQuestionNum = document.getElementById('currentQuestionNum');
+        const totalQuestionsCount = document.getElementById('totalQuestionsCount');
+        const streakBox = document.getElementById('streakBox');
+        const streakCount = document.getElementById('streakCount');
+        const currentScore = document.getElementById('currentScore');
+        const timerText = document.getElementById('timerText');
+        const timerBar = document.getElementById('timerBar');
+        const questionText = document.getElementById('questionText');
+        const answersGrid = document.getElementById('answersGrid');
+        const feedbackBox = document.getElementById('feedbackBox');
+        const feedbackIcon = document.getElementById('feedbackIcon');
+        const feedbackTitle = document.getElementById('feedbackTitle');
+        const feedbackExplanation = document.getElementById('feedbackExplanation');
+        const btnNextQuestion = document.getElementById('btnNextQuestion');
+
+        // Elemen Keputusan
+        const resultBadgeIcon = document.getElementById('resultBadgeIcon');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultRankName = document.getElementById('resultRankName');
+        const finalScore = document.getElementById('finalScore');
+        const finalAccuracy = document.getElementById('finalAccuracy');
+        const finalMaxStreak = document.getElementById('finalMaxStreak');
+        const summaryRatio = document.getElementById('summaryRatio');
+        const summaryList = document.getElementById('summaryList');
+        const btnPlayAgain = document.getElementById('btnPlayAgain');
+        const btnShareResult = document.getElementById('btnShareResult');
+        const shareBtnText = document.getElementById('shareBtnText');
+        const toastMessage = document.getElementById('toastMessage');
+        const toastText = document.getElementById('toastText');
+
+        /* ==========================================================
+           5. FUNGSI LOGIK PERMAINAN
+           ========================================================== */
+
+        // Pilihan Kategori di Skrin Utama
+        categoryGrid.addEventListener('click', (e) => {
+            const btn = e.target.closest('.category-btn');
+            if (!btn) return;
+            sound.click();
+
+            document.querySelectorAll('.category-btn').forEach(b => {
+                b.classList.remove('border-indigo-600', 'bg-indigo-50/70', 'text-indigo-900', 'font-semibold');
+                b.classList.add('border-slate-200', 'bg-white', 'text-slate-700', 'font-medium');
+            });
+
+            btn.classList.remove('border-slate-200', 'bg-white', 'text-slate-700', 'font-medium');
+            btn.classList.add('border-indigo-600', 'bg-indigo-50/70', 'text-indigo-900', 'font-semibold');
+
+            selectedCategory = btn.getAttribute('data-category');
+        });
+
+        // Kawalan Audio Bunyi
+        btnSoundToggle.addEventListener('click', () => {
+            sound.enabled = !sound.enabled;
+            if (sound.enabled) {
+                soundIcon.className = 'fa-solid fa-volume-high text-sm';
+                showToast("Bunyi diaktifkan");
+            } else {
+                soundIcon.className = 'fa-solid fa-volume-xmark text-sm text-slate-400';
+                showToast("Bunyi dimatikan");
+            }
+        });
+
+        // Mula Kuiz
+        btnStartGame.addEventListener('click', () => {
+            sound.click();
+            startGame();
+        });
+
+        btnPlayAgain.addEventListener('click', () => {
+            sound.click();
+            screenResult.classList.add('hidden');
+            screenStart.classList.remove('hidden');
+        });
+
+        btnNextQuestion.addEventListener('click', () => {
+            sound.click();
+            currentIndex++;
+            if (currentIndex < activeQuestions.length) {
+                renderQuestion();
+            } else {
+                finishGame();
+            }
+        });
+
+        function startGame() {
+            // Tapis soalan mengikut kategori
+            let pool = [];
+            if (selectedCategory === 'all') {
+                pool = [...QUESTION_BANK];
+            } else {
+                pool = QUESTION_BANK.filter(q => q.category === selectedCategory);
+            }
+
+            // Rawakkan susunan soalan (Fisher-Yates Shuffle)
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+
+            activeQuestions = pool.slice(0, Math.min(QUESTIONS_PER_GAME, pool.length));
+            currentIndex = 0;
+            score = 0;
+            streak = 0;
+            maxStreak = 0;
+            correctAnswersCount = 0;
+            userLogs = [];
+
+            // Kemas kini UI Skor awal
+            currentScore.innerText = '0';
+            streakCount.innerText = '0';
+            totalQuestionsCount.innerText = activeQuestions.length;
+
+            screenStart.classList.add('hidden');
+            screenResult.classList.add('hidden');
+            screenQuiz.classList.remove('hidden');
+            screenQuiz.classList.add('flex');
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            isAnswerLocked = false;
+            feedbackBox.classList.add('hidden');
+            
+            const q = activeQuestions[currentIndex];
+            currentQuestionNum.innerText = currentIndex + 1;
+            badgeCategory.innerText = q.categoryLabel;
+            questionText.innerText = q.question;
+
+            // Render butang pilihan jawapan
+            answersGrid.innerHTML = '';
+            const optionLabels = ['A', 'B', 'C', 'D'];
+
+            q.answers.forEach((ansText, index) => {
+                const btn = document.createElement('button');
+                btn.className = "ans-btn group flex items-center p-3.5 sm:p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/40 text-slate-800 text-left font-medium text-xs sm:text-sm transition-all duration-150 shadow-xs active:scale-[0.99]";
+                btn.innerHTML = `
+                    <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-600 flex items-center justify-center font-bold text-xs mr-3 transition-colors shrink-0">
+                        ${optionLabels[index]}
+                    </span>
+                    <span class="flex-1 leading-snug">${ansText}</span>
+                `;
+                btn.addEventListener('click', () => handleSelectAnswer(index, btn));
+                answersGrid.appendChild(btn);
+            });
+
+            // Mula pemasa 15 saat
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = QUESTION_TIME_LIMIT;
+            updateTimerDisplay();
+
+            const stepMs = 100;
+            timerInterval = setInterval(() => {
+                timeLeft -= (stepMs / 1000);
+
+                if (timeLeft <= 0) {
+                    timeLeft = 0;
+                    clearInterval(timerInterval);
+                    updateTimerDisplay();
+                    handleTimeOut();
+                } else {
+                    updateTimerDisplay();
+                    // Kesan bunyi detik bila masa tinggal 4 saat
+                    if (timeLeft <= 4.0 && Math.round(timeLeft * 10) % 10 === 0) {
+                        sound.tick();
+                    }
+                }
+            }, stepMs);
+        }
+
+        function updateTimerDisplay() {
+            timerText.innerText = `${Math.max(0, timeLeft).toFixed(1)}s`;
+            const percentage = (timeLeft / QUESTION_TIME_LIMIT) * 100;
+            timerBar.style.width = `${percentage}%`;
+
+            // Tukar warna penunjuk mengikut baki masa
+            if (percentage > 50) {
+                timerBar.className = "h-full bg-emerald-500 rounded-full transition-all duration-100 ease-linear";
+                timerText.className = "font-mono font-bold text-emerald-600 text-sm";
+            } else if (percentage > 25) {
+                timerBar.className = "h-full bg-amber-500 rounded-full transition-all duration-100 ease-linear";
+                timerText.className = "font-mono font-bold text-amber-600 text-sm";
+            } else {
+                timerBar.className = "h-full bg-rose-500 rounded-full transition-all duration-100 ease-linear animate-pulse";
+                timerText.className = "font-mono font-bold text-rose-600 text-sm animate-pulse";
+            }
+        }
+
+        function handleSelectAnswer(selectedIndex, selectedBtn) {
+            if (isAnswerLocked) return;
+            isAnswerLocked = true;
+            clearInterval(timerInterval);
+
+            const q = activeQuestions[currentIndex];
+            const isCorrect = (selectedIndex === q.correct);
+            const allOptionButtons = answersGrid.querySelectorAll('.ans-btn');
+
+            // Kunci semua butang
+            allOptionButtons.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                sound.correct();
+                streak++;
+                if (streak > maxStreak) maxStreak = streak;
+                correctAnswersCount++;
+
+                // Pengiraan skor: Asas 100 + bonus kepantasan (hingga 100) * multiplier streak
+                const speedBonus = Math.round((timeLeft / QUESTION_TIME_LIMIT) * 100);
+                const multiplier = streak >= 4 ? 3.0 : (streak >= 3 ? 2.0 : (streak >= 2 ? 1.5 : 1.0));
+                const gainedScore = Math.round((100 + speedBonus) * multiplier);
+                score += gainedScore;
+
+                // Gaya butang betul
+                selectedBtn.classList.remove('border-slate-200', 'bg-white');
+                selectedBtn.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-950');
+                const badge = selectedBtn.querySelector('span');
+                badge.classList.remove('bg-slate-100', 'text-slate-600');
+                badge.classList.add('bg-emerald-500', 'text-white');
+                badge.innerHTML = '<i class="fa-solid fa-check"></i>';
+
+                showFeedback(true, `Tepat Sekali! (+${gainedScore} mata)`, q.fact);
+                userLogs.push({ question: q.question, isCorrect: true, userChoice: q.answers[selectedIndex] });
+            } else {
+                sound.wrong();
+                streak = 0; // Reset streak
+
+                // Gaya butang salah
+                selectedBtn.classList.remove('border-slate-200', 'bg-white');
+                selectedBtn.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-950');
+                const badge = selectedBtn.querySelector('span');
+                badge.classList.remove('bg-slate-100', 'text-slate-600');
+                badge.classList.add('bg-rose-500', 'text-white');
+                badge.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+
+                // Tunjukkan jawapan yang betul
+                const correctBtn = allOptionButtons[q.correct];
+                if (correctBtn) {
+                    correctBtn.classList.add('border-emerald-500', 'bg-emerald-50/70');
+                }
+
+                showFeedback(false, `Kurang Tepat! Jawapan betul: ${q.answers[q.correct]}`, q.fact);
+                userLogs.push({ question: q.question, isCorrect: false, userChoice: q.answers[selectedIndex] });
+            }
+
+            // Kemas kini paparan skor & streak
+            currentScore.innerText = score;
+            streakCount.innerText = streak;
+            if (streak >= 2) {
+                streakBox.classList.add('bg-amber-100', 'border-amber-300', 'scale-105');
+            } else {
+                streakBox.classList.remove('bg-amber-100', 'border-amber-300', 'scale-105');
+            }
+        }
+
+        function handleTimeOut() {
+            if (isAnswerLocked) return;
+            isAnswerLocked = true;
+            sound.wrong();
+            streak = 0;
+            streakCount.innerText = streak;
+
+            const q = activeQuestions[currentIndex];
+            const allOptionButtons = answersGrid.querySelectorAll('.ans-btn');
+            allOptionButtons.forEach(btn => btn.disabled = true);
+
+            // Sorotkan jawapan yang betul
+            const correctBtn = allOptionButtons[q.correct];
+            if (correctBtn) {
+                correctBtn.classList.add('border-emerald-500', 'bg-emerald-50/70');
+            }
+
+            showFeedback(false, `Masa Tamat! Jawapan betul: ${q.answers[q.correct]}`, q.fact);
+            userLogs.push({ question: q.question, isCorrect: false, userChoice: 'Masa Tamat' });
+        }
+
+        function showFeedback(isSuccess, title, factText) {
+            feedbackBox.classList.remove('hidden');
+            if (isSuccess) {
+                feedbackBox.className = "rounded-2xl p-4 border bg-emerald-50/90 border-emerald-200 text-emerald-900 transition-all duration-300 mb-2";
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-xl"></i>';
+                feedbackTitle.innerText = title;
+                feedbackTitle.className = "font-bold text-sm text-emerald-800 leading-tight";
+            } else {
+                feedbackBox.className = "rounded-2xl p-4 border bg-rose-50/90 border-rose-200 text-rose-900 transition-all duration-300 mb-2";
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600 text-xl"></i>';
+                feedbackTitle.innerText = title;
+                feedbackTitle.className = "font-bold text-sm text-rose-800 leading-tight";
+            }
+            feedbackExplanation.innerText = factText;
+        }
+
+        /* ==========================================================
+           6. KEPUTUSAN & TAMAT PERMAINAN
+           ========================================================== */
+        function finishGame() {
+            clearInterval(timerInterval);
+            sound.finish();
+
+            screenQuiz.classList.remove('flex');
+            screenQuiz.classList.add('hidden');
+            screenResult.classList.remove('hidden');
+            screenResult.classList.add('flex');
+
+            const total = activeQuestions.length;
+            const accuracy = Math.round((correctAnswersCount / total) * 100);
+
+            finalScore.innerText = score;
+            finalAccuracy.innerText = `${accuracy}%`;
+            finalMaxStreak.innerText = `${maxStreak}x`;
+            summaryRatio.innerText = `${correctAnswersCount} / ${total} Betul`;
+
+            // Penentuan Gred & Gelaran
+            let title = "Syabas!";
+            let rank = "Peserta Pintar";
+            let icon = "🎖️";
+
+            if (accuracy === 100) {
+                title = "Sempurna!";
+                rank = "Adiwira Minda Genius";
+                icon = "👑";
+            } else if (accuracy >= 80) {
+                title = "Prestasi Cemerlang!";
+                rank = "Cendekiawan Pintar";
+                icon = "🏆";
+            } else if (accuracy >= 50) {
+                title = "Usaha Yang Baik!";
+                rank = "Penjelajah Ilmu";
+                icon = "⭐";
+            } else {
+                title = "Jangan Putus Asa!";
+                rank = "Perintis Muda";
+                icon = "🌱";
+            }
+
+            resultTitle.innerText = title;
+            resultRankName.innerText = rank;
+            resultBadgeIcon.innerText = icon;
+
+            // Render senarai ringkasan soalan
+            summaryList.innerHTML = '';
+            userLogs.forEach((item, idx) => {
+                const row = document.createElement('div');
+                row.className = `p-2.5 rounded-xl border flex items-center justify-between ${item.isCorrect ? 'bg-emerald-50/70 border-emerald-200' : 'bg-rose-50/70 border-rose-200'}`;
+                row.innerHTML = `
+                    <div class="flex items-center space-x-2 truncate pr-2">
+                        <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 ${item.isCorrect ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}">
+                            ${idx + 1}
+                        </span>
+                        <span class="text-slate-700 truncate font-medium text-xs">${item.question}</span>
+                    </div>
+                    <span class="shrink-0 text-xs font-semibold ${item.isCorrect ? 'text-emerald-700' : 'text-rose-700'}">
+                        ${item.isCorrect ? '<i class="fa-solid fa-check"></i> Betul' : '<i class="fa-solid fa-xmark"></i> Salah'}
+                    </span>
+                `;
+                summaryList.appendChild(row);
+            });
+        }
+
+        /* ==========================================================
+           7. KONGSI KEPUTUSAN & TOAST
+           ========================================================== */
+        btnShareResult.addEventListener('click', () => {
+            sound.click();
+            const shareText = `🧠 EduTrivia: Saya memperoleh skor ${score} mata dengan ketepatan ${finalAccuracy.innerText} (Pangkat: ${resultRankName.innerText})! Jom asah minda bersama.`;
+
+            // Kaedah salin clipboard mesra iframe
+            const tempInput = document.createElement("textarea");
+            tempInput.value = shareText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showToast("Keputusan disalin ke papan keratan!");
+                shareBtnText.innerText = "Tersalin!";
+                setTimeout(() => { shareBtnText.innerText = "Salin Keputusan"; }, 2500);
+            } catch (err) {
+                showToast("Gagal menyalin, sila cuba lagi.");
+            }
+            document.body.removeChild(tempInput);
+        });
+
+        function showToast(msg) {
+            toastText.innerText = msg;
+            toastMessage.classList.remove('opacity-0', 'pointer-events-none');
+            toastMessage.classList.add('opacity-100');
+            setTimeout(() => {
+                toastMessage.classList.remove('opacity-100');
+                toastMessage.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>

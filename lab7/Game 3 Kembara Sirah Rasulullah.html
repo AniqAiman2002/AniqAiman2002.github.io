@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ms" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kembara Sirah Rasulullah ﷺ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sirah: {
+                            emerald: '#064e3b',
+                            emeraldDark: '#022c22',
+                            emeraldLight: '#047857',
+                            gold: '#d97706',
+                            goldLight: '#fbbf24',
+                            night: '#051411',
+                            cream: '#fffbeb'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #051411;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(6, 78, 59, 0.45) 0%, transparent 65%),
+                radial-gradient(circle at 20% 90%, rgba(217, 119, 6, 0.12) 0%, transparent 60%);
+            touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .font-arabic {
+            font-family: 'Amiri', serif;
+        }
+        .bg-pattern {
+            background-image: radial-gradient(#d97706 0.7px, transparent 0.7px), radial-gradient(#064e3b 0.7px, #051411 0.7px);
+            background-size: 26px 26px;
+            background-position: 0 0, 13px 13px;
+            opacity: 0.18;
+        }
+    </style>
+</head>
+<body class="w-full h-full min-h-[100dvh] flex flex-col justify-between text-sirah-cream overflow-x-hidden relative">
+
+    <div class="fixed inset-0 bg-pattern pointer-events-none z-0"></div>
+
+    <!-- ================= HEADER TOP HUD ================= -->
+    <header class="relative z-10 w-full pt-[max(0.75rem,var(--sat))] px-4 pb-2.5 bg-sirah-emeraldDark/90 backdrop-blur-md border-b border-sirah-gold/30">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-sirah-gold text-sirah-night flex items-center justify-center font-bold text-sm shadow">
+                    ﷺ
+                </div>
+                <div>
+                    <h1 class="text-xs font-bold tracking-wide text-sirah-goldLight">KEMBARA SIRAH</h1>
+                    <p id="hudPlayerName" class="text-[10px] text-emerald-200 truncate max-w-[110px]">Musafir: -</p>
+                </div>
+            </div>
+
+            <!-- Nyawa & Skor -->
+            <div class="flex items-center space-x-2.5">
+                <div id="livesContainer" class="flex space-x-1 text-xs text-rose-400">
+                    <i id="heart1" class="fa-solid fa-heart"></i>
+                    <i id="heart2" class="fa-solid fa-heart"></i>
+                    <i id="heart3" class="fa-solid fa-heart"></i>
+                </div>
+                <div class="px-2.5 py-1 rounded-full bg-sirah-emerald/70 border border-sirah-gold/40 text-[11px] font-bold text-amber-300">
+                    <i class="fa-solid fa-star text-amber-400 mr-1"></i><span id="hudScore">0</span>
+                </div>
+                <button id="btnSoundToggle" class="w-7 h-7 rounded-full bg-sirah-emeraldDark border border-sirah-gold/30 text-amber-300 flex items-center justify-center text-xs active:scale-95">
+                    <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bar Kemajuan Soalan -->
+        <div class="max-w-md mx-auto mt-2">
+            <div class="flex justify-between items-center text-[10px] font-semibold text-emerald-300 mb-1 px-1">
+                <span id="progressText">Soalan 1 daripada 15</span>
+                <span id="stageBadge" class="text-amber-300 font-bold">Kelahiran Mulia</span>
+            </div>
+            <div class="w-full bg-black/40 h-2 rounded-full overflow-hidden border border-emerald-900">
+                <div id="progressBar" class="h-full bg-gradient-to-r from-amber-400 to-sirah-gold w-[6.6%] transition-all duration-300 rounded-full"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="relative z-10 flex-1 w-full max-w-md mx-auto px-4 py-3 flex flex-col justify-start">
+        
+        <!-- ================= 1. VIEW MULA (WELCOME) ================= -->
+        <div id="viewWelcome" class="flex-1 flex flex-col justify-between py-2 text-center">
+            <div class="space-y-4 pt-2">
+                <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-b from-sirah-goldLight to-sirah-gold p-1 shadow-lg flex items-center justify-center">
+                    <div class="w-full h-full rounded-full bg-sirah-emeraldDark flex items-center justify-center">
+                        <span class="text-3xl text-amber-300 font-arabic">محمد</span>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[11px] uppercase tracking-widest text-amber-300/90 font-bold">Kembara Pantas & Mudah</span>
+                    <h2 class="text-2xl font-extrabold text-white">Sirah Rasulullah ﷺ</h2>
+                    <p class="text-xs text-emerald-200/90 leading-relaxed px-2">
+                        Hayatilah 15 detik bersejarah junjungan mulia daripada kelahiran baginda hingga Fathu Makkah secara terus dan santai.
+                    </p>
+                </div>
+
+                <!-- Input Nama Pemain -->
+                <div class="pt-2 max-w-xs mx-auto w-full text-left">
+                    <label for="inputUsername" class="block text-[11px] font-bold text-amber-200 mb-1">
+                        <i class="fa-solid fa-user-pen mr-1"></i> Nama Musafir:
+                    </label>
+                    <input type="text" id="inputUsername" maxlength="15" placeholder="Masukkan nama anda..." 
+                        class="w-full px-3.5 py-3 rounded-xl bg-sirah-night/80 border border-sirah-gold/50 text-white placeholder-emerald-700 focus:outline-none focus:border-amber-400 text-sm font-semibold shadow-inner">
+                    <p id="nameError" class="text-[10px] text-rose-400 mt-1 hidden">Sila masukkan nama untuk teruskan.</p>
+                </div>
+
+                <!-- Nota Panduan Sahih -->
+                <div class="bg-sirah-emeraldDark/80 border border-sirah-gold/30 rounded-xl p-3 text-left space-y-1 text-[11px] text-emerald-100/90">
+                    <div class="font-bold text-amber-300 flex items-center">
+                        <i class="fa-solid fa-book-quran mr-1.5 text-sirah-goldLight"></i> Rujukan Sahih:
+                    </div>
+                    <p class="text-[10px] leading-relaxed">
+                        Berdasarkan kitab <em>Ar-Rahiq al-Makhtum</em>, <em>Sirah Ibn Hisham</em> dan Hadis Sahih. Tanpa sebarang gambaran fizikal rupa paras Nabi ﷺ.
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-2 pb-[max(0.5rem,var(--sab))] pt-3">
+                <button id="btnStart" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-sirah-night font-bold text-sm tracking-wide shadow-lg active:scale-95 transition flex items-center justify-center space-x-2">
+                    <span>MULA KEMBARA</span>
+                    <i class="fa-solid fa-play text-xs"></i>
+                </button>
+                <button id="btnViewLeaderboard" class="w-full py-2.5 rounded-xl bg-sirah-emerald/50 border border-sirah-gold/30 text-amber-200 font-semibold text-xs active:scale-95 transition">
+                    <i class="fa-solid fa-trophy mr-1 text-amber-400"></i> Papan Markah Tertinggi
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 2. VIEW KEMBARA (GAMEPLAY) ================= -->
+        <div id="viewGameplay" class="flex-1 flex flex-col justify-between hidden">
+            
+            <div class="space-y-3 pt-1">
+                <!-- Kad Soalan -->
+                <div class="bg-sirah-emeraldDark/90 border border-sirah-gold/40 rounded-2xl p-4 shadow-lg backdrop-blur-sm">
+                    <div class="flex items-center justify-between border-b border-sirah-gold/20 pb-2 mb-2">
+                        <span id="questionTopic" class="text-[10px] font-bold text-amber-300 tracking-wider uppercase">TOPIK SIRAH</span>
+                        <span id="streakBadge" class="text-[10px] font-bold text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-700/50">🔥 Rentetan: 0</span>
+                    </div>
+                    <p id="questionText" class="text-sm md:text-base font-bold text-white leading-relaxed">
+                        Soalan sirah dipaparkan di sini...
+                    </p>
+                </div>
+
+                <!-- 4 Pilihan Jawapan Mesra Skrin Telefon -->
+                <div id="optionsContainer" class="space-y-2">
+                    <!-- Butang jawapan dijana automatik oleh JavaScript -->
+                </div>
+
+                <!-- Kad Maklum Balas & Penjelasan Segera -->
+                <div id="feedbackBox" class="hidden rounded-xl p-3 border shadow-md space-y-1 transition-all">
+                    <div class="flex items-center space-x-2">
+                        <span id="feedbackIcon" class="text-base"></span>
+                        <h4 id="feedbackTitle" class="text-xs font-bold"></h4>
+                    </div>
+                    <p id="feedbackExplanation" class="text-[11px] text-emerald-100 leading-relaxed"></p>
+                    <p id="feedbackSource" class="text-[9px] text-amber-300/80 italic pt-0.5"></p>
+                </div>
+            </div>
+
+            <!-- Butang Tindakan Seterusnya (Sangat Jelas & Tak Tersangkut) -->
+            <div class="pb-[max(0.5rem,var(--sab))] pt-2">
+                <button id="btnNext" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-sirah-night font-bold text-sm tracking-wide shadow-lg active:scale-95 transition hidden flex items-center justify-center space-x-2">
+                    <span id="btnNextText">SOALAN SETERUSNYA</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 3. VIEW TAMAT (FINAL RESULT) ================= -->
+        <div id="viewFinal" class="flex-1 flex flex-col justify-between py-2 text-center hidden">
+            <div class="space-y-4 pt-3">
+                <div class="text-4xl text-amber-400 animate-bounce">🏆</div>
+                <div class="space-y-1">
+                    <span class="text-xs uppercase font-bold text-amber-300 tracking-wider">Kembara Disempurnakan</span>
+                    <h2 class="text-2xl font-black text-white">Alhamdulillah Selesai!</h2>
+                    <p id="finalPlayerGreeting" class="text-xs text-emerald-200">Tahniah, Musafir!</p>
+                </div>
+
+                <!-- Kad Statistik -->
+                <div class="bg-sirah-emeraldDark/90 border border-sirah-gold/40 rounded-2xl p-4 shadow-lg space-y-3 max-w-sm mx-auto w-full">
+                    <div class="grid grid-cols-2 gap-2 text-left">
+                        <div class="bg-sirah-night/80 p-3 rounded-xl border border-emerald-900">
+                            <span class="text-[10px] text-emerald-300 uppercase font-semibold block">Skor Akhir</span>
+                            <span id="finalScore" class="text-xl font-black text-amber-300">0</span>
+                        </div>
+                        <div class="bg-sirah-night/80 p-3 rounded-xl border border-emerald-900">
+                            <span class="text-[10px] text-emerald-300 uppercase font-semibold block">Ketepatan</span>
+                            <span id="finalAccuracy" class="text-xl font-black text-emerald-200">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-sirah-emerald/40 p-2.5 rounded-xl border border-sirah-gold/30 text-left">
+                        <span class="text-[10px] text-amber-300 font-bold block mb-0.5">Hikmah Kembara:</span>
+                        <p id="finalNote" class="text-xs text-emerald-100 leading-snug">
+                            Pengetahuan anda mengenai perjalanan hidup Rasulullah ﷺ amat cemerlang. Semoga menjadi dorongan untuk terus mengamalkan sunnah baginda.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2 pb-[max(0.5rem,var(--sab))]">
+                <button id="btnShowBoardFromFinal" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-sirah-night font-bold text-sm tracking-wide shadow-md active:scale-95 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>LIHAT PAPAN MARKAH</span>
+                </button>
+                <button id="btnRestart" class="w-full py-2.5 rounded-xl bg-sirah-emerald/40 border border-sirah-gold/40 text-amber-200 font-semibold text-xs active:scale-95 transition">
+                    <i class="fa-solid fa-rotate-right mr-1"></i> Main Semula
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 4. VIEW PAPAN MARKAH (LEADERBOARD) ================= -->
+        <div id="viewLeaderboard" class="flex-1 flex flex-col justify-between py-2 hidden">
+            <div class="space-y-3">
+                <div class="flex items-center justify-between border-b border-sirah-gold/30 pb-2">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-trophy text-amber-400 text-lg"></i>
+                        <h3 class="text-base font-bold text-white">Papan Markah Musafir</h3>
+                    </div>
+                    <button id="btnCloseBoard" class="w-7 h-7 rounded-full bg-sirah-emeraldDark text-amber-300 flex items-center justify-center text-xs border border-sirah-gold/30">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <p class="text-[11px] text-emerald-200">Rekod musafir terbaik di telefon ini:</p>
+
+                <div id="leaderboardList" class="space-y-1.5 max-h-[55vh] overflow-y-auto pr-1">
+                    <!-- Senarai diisi automatik -->
+                </div>
+            </div>
+
+            <div class="pt-2 pb-[max(0.5rem,var(--sab))]">
+                <button id="btnBackToGame" class="w-full py-3 rounded-xl bg-sirah-emerald text-amber-200 border border-sirah-gold/40 font-bold text-xs active:scale-95 transition">
+                    KEMBALI
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        /* ==========================================================
+           1. SISTEM AUDIO RINGKAS (WEB AUDIO API)
+           ========================================================== */
+        class SimpleAudio {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+            correct() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                [523.25, 659.25, 783.99].forEach((f, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(f, now + i * 0.07);
+                    gain.gain.setValueAtTime(0.08, now + i * 0.07);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.07);
+                    osc.stop(now + i * 0.07 + 0.2);
+                });
+            }
+            wrong() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(140, now + 0.22);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.22);
+            }
+            tap() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.02, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.04);
+            }
+            finish() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                [440, 554, 659, 880].forEach((f, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(f, now + i * 0.09);
+                    gain.gain.setValueAtTime(0.09, now + i * 0.09);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.3);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.09);
+                    osc.stop(now + i * 0.09 + 0.3);
+                });
+            }
+        }
+        const audio = new SimpleAudio();
+
+        /* ==========================================================
+           2. 15 SOALAN SIRAH BERTERUSAN (KRONOLOGI SAHIH)
+           ========================================================== */
+        const SIRAH_QUESTIONS = [
+            // Fasa 1: Kelahiran & Zaman Awal
+            {
+                topic: "Kelahiran Mulia",
+                q: "Pada tahun berapakah Nabi Muhammad ﷺ diputerakan di kota Makkah mengikut peristiwa bersejarah tentera bergajah Abrahah?",
+                options: ["Tahun Gajah (571 Masihi)", "Tahun Kesedihan (619 Masihi)", "Tahun Kenabian (610 Masihi)", "Tahun Hijrah (622 Masihi)"],
+                ans: 0,
+                exp: "Baginda diputerakan pada Tahun Gajah, tahun di mana Allah melindungi Kaabah daripada serangan tentera bergajah yang diketuai oleh Abrahah.",
+                ref: "Ar-Rahiq al-Makhtum; Sirah Ibn Hisham"
+            },
+            {
+                topic: "Ibu Susuan Baginda",
+                q: "Siapakah wanita mulia daripada perkampungan Bani Sa'ad yang menyusukan dan menjaga Nabi Muhammad ﷺ pada zaman bayi baginda?",
+                options: ["Halimatus Sa'diah", "Ummu Aiman", "Barakah", "Khadijah binti Khuwailid"],
+                ans: 0,
+                exp: "Halimatus Sa'diah mengasuh baginda di perkampungan padang pasir Bani Sa'ad dan memperoleh pelbagai keberkatan hidup semasa menjaga baginda.",
+                ref: "Sahih Muslim; Ar-Rahiq al-Makhtum"
+            },
+            {
+                topic: "Penjagaan & Bapa Saudara",
+                q: "Selepas kewafatan bonda Aminah dan datuk baginda Abdul Muttalib, siapakah bapa saudara yang membela dan melindungi baginda dengan penuh kasih sayang?",
+                options: ["Abu Talib", "Abu Lahab", "Hamzah bin Abdul Muttalib", "Al-Abbas bin Abdul Muttalib"],
+                ans: 0,
+                exp: "Abu Talib menjaga Nabi ﷺ sejak berusia 8 tahun, menyayangi baginda melebihi anak-anak kandungnya sendiri, dan membelanya sepanjang fasa dakwah Makkah.",
+                ref: "Sirah Ibn Hisham, Jilid 1"
+            },
+            {
+                topic: "Gelar Al-Amin",
+                q: "Penduduk Makkah memberi gelaran 'Al-Amin' kepada Nabi Muhammad ﷺ sejak zaman muda baginda kerana baginda terkenal dengan sifat:",
+                options: ["Sangat jujur dan amanah dipercayai", "Pahlawan yang paling gagah", "Saudagar yang paling kaya", "Penyair yang fasih bersyair"],
+                ans: 0,
+                exp: "Gelaran 'Al-Amin' (yang dipercayai) diberikan oleh kaum Quraisy kerana kejujuran mutlak baginda dalam perkataan dan urusan amanah harian.",
+                ref: "Ar-Rahiq al-Makhtum"
+            },
+            // Fasa 2: Wahyu Pertama & Makkah
+            {
+                topic: "Wahyu Pertama di Gua Hira'",
+                q: "Apakah ayat Al-Quran pertama yang diturunkan kepada baginda melalui Malaikat Jibril a.s. di Gua Hira'?",
+                options: ["Surah Al-'Alaq (Iqra')", "Surah Al-Fatihah", "Surah Al-Muddathir", "Surah Al-Baqarah"],
+                ans: 0,
+                exp: "Malaikat Jibril a.s. membawa wahyu pertama Surah Al-'Alaq ayat 1-5 dengan kalimah agung: 'Iqra' bismi rabbikallazi khalaq' (Bacalah dengan nama Tuhanmu yang menciptakan).",
+                ref: "Sahih al-Bukhari, Hadis No. 3"
+            },
+            {
+                topic: "Tokoh Pengesah Kenabian",
+                q: "Selepas menerima wahyu pertama, Sayyidatina Khadijah r.a. membawa Nabi ﷺ bertemu seorang pendeta Nasrani berilmu yang mengesahkan bahawa baginda didatangi Malaikat Jibril. Siapakah beliau?",
+                options: ["Waraqah bin Naufal", "Bahira", "Mus'ab bin Umair", "Salman al-Farisi"],
+                ans: 0,
+                exp: "Waraqah bin Naufal mengesahkan bahawa yang datang kepada Nabi ﷺ adalah 'An-Namus' (Malaikat Jibril) yang pernah diutuskan kepada Nabi Musa a.s.",
+                ref: "Sahih al-Bukhari, Hadis No. 3"
+            },
+            {
+                topic: "Dakwah Terbuka di Bukit Shafa",
+                q: "Apabila diperintahkan berdakwah secara terang-terangan, di manakah tempat pertama Rasulullah ﷺ mengumpulkan seluruh kabilah Quraisy?",
+                options: ["Bukit Shafa", "Gua Thaur", "Perkampungan Mina", "Padang Arafah"],
+                ans: 0,
+                exp: "Baginda berdiri di atas Bukit Shafa memanggil kabilah-kabilah Quraisy dan bertanya tentang kejujuran baginda sebelum menyeru mereka mentauhidkan Allah.",
+                ref: "Sahih al-Bukhari & Sahih Muslim"
+            },
+            {
+                topic: "Ketabahan Hadapi Boikot",
+                q: "Selama 3 tahun Bani Hasyim diboikot di Syi'ib Abi Talib, lembaran piagam boikot zalim yang digantung di Kaabah akhirnya musnah kerana:",
+                options: ["Dimakan anai-anai kecuali nama Allah", "Terbakar disambar petir", "Dihanyutkan banjir kilat", "Dicuri oleh pembesar Quraisy"],
+                ans: 0,
+                exp: "Mukjizat berlaku apabila anai-anai memakan tulisan zalim pada lembaran piagam tersebut melainkan kalimah 'Bismikallahumma'.",
+                ref: "Ar-Rahiq al-Makhtum"
+            },
+            // Fasa 3: Hijrah & Pengorbanan
+            {
+                topic: "Tidur di Tempat Nabi",
+                q: "Pada malam rumah baginda dikepung oleh pemuda Quraisy, siapakah pemuda berani yang rela tidur di atas tempat tidur baginda berselimutkan kain Nabi?",
+                options: ["Sayyidina Ali bin Abi Thalib r.a.", "Sayyidina Abu Bakar r.a.", "Sayyidina Bilal bin Rabah r.a.", "Sayyidina Zaid bin Haritsah r.a."],
+                ans: 0,
+                exp: "Sayyidina Ali r.a. dengan penuh keberanian menggantikan tempat tidur Nabi ﷺ agar baginda dapat berhijrah dan bagi memulangkan amanah barang titipan.",
+                ref: "Sirah Ibn Hisham; Sahih al-Bukhari"
+            },
+            {
+                topic: "Gua Thaur & Sahabat Sejati",
+                q: "Semasa musyrikin Quraisy menjejaki baginda hingga ke pintu Gua Thaur, siapakah sahabat setia yang menemani baginda sehingga Nabi berpesan 'Jangan takut, Allah bersama kita'?",
+                options: ["Sayyidina Abu Bakar As-Siddiq r.a.", "Sayyidina Umar bin Al-Khattab r.a.", "Sayyidina Uthman bin Affan r.a.", "Sayyidina Hamzah r.a."],
+                ans: 0,
+                exp: "Peristiwa ini dirakamkan dalam Surah At-Taubah ayat 40 mengenai Abu Bakar r.a. sebagai teman baginda di dalam gua.",
+                ref: "Surah At-Taubah: 40; Sahih al-Bukhari"
+            },
+            // Fasa 4: Madinah Munawwarah
+            {
+                topic: "Masjid Pertama di Madinah",
+                q: "Sebelum melangkah masuk ke pusat kota Madinah, apakah nama masjid pertama dalam sejarah Islam yang dibina oleh Nabi ﷺ di pinggir kota?",
+                options: ["Masjid Quba'", "Masjid Nabawi", "Masjidil Aqsa", "Masjid Qiblatain"],
+                ans: 0,
+                exp: "Masjid Quba' diasaskan atas dasar takwa sejak hari pertama baginda singgah sebelum tiba di tengah kota Yathrib (Madinah).",
+                ref: "Sahih al-Bukhari; Surah At-Taubah: 108"
+            },
+            {
+                topic: "Persaudaraan Teragung",
+                q: "Apakah asas penyatuan masyarakat Madinah yang dilakukan oleh baginda antara orang berhijrah dari Makkah dan penduduk asal Madinah?",
+                options: ["Mempersaudarakan Muhajirin dan Ansar", "Membahagikan tentera mengikut kabilah", "Membina tembok pertahanan di sekeliling kota", "Mengutip ufti tahunan"],
+                ans: 0,
+                exp: "Rasulullah ﷺ mempersaudarakan kaum Muhajirin (yang berhijrah) dan kaum Ansar (penduduk Madinah yang menolong) dengan ikatan ukhuwah Islamiyah yang suci.",
+                ref: "Ar-Rahiq al-Makhtum"
+            },
+            {
+                topic: "Perlembagaan Bertulis Pertama",
+                q: "Dokumen bertulis yang digubal oleh Rasulullah ﷺ untuk menyatukan penduduk Madinah termasuk kaum Yahudi dan menjamin keadilan bersama dikenali sebagai:",
+                options: ["Piagam Madinah (Sahifah Madinah)", "Perjanjian Hudaibiyah", "Baiah Aqabah", "Piagam Makkah"],
+                ans: 0,
+                exp: "Piagam Madinah merupakan perlembagaan bertulis pertama di dunia yang menjamin hak kebebasan beragama, keadilan bersama, dan keselamatan negara.",
+                ref: "Sirah Ibn Hisham; Ar-Rahiq al-Makhtum"
+            },
+            // Fasa 5: Fathu Makkah & Kemenangan Damai
+            {
+                topic: "Pembukaan Kota Makkah",
+                q: "Semasa peristiwa Pembukaan Kota Makkah (Fathu Makkah) pada tahun ke-8 Hijrah, baginda memasuki kota dengan sikap:",
+                options: ["Menundukkan kepala tanda tawaduk dan memberi kemaafan umum", "Membakar rumah pembesar Quraisy", "Menghukum bunuh semua tawanan", "Mengisytiharkan perang berterusan"],
+                ans: 0,
+                exp: "Baginda menundukkan kepala tanda penuh syukur kepada Allah dan mengisytiharkan kemaafan umum dengan kata-kata: 'Pergilah, kamu semua dibebaskan!'.",
+                ref: "Sahih al-Bukhari; Ar-Rahiq al-Makhtum"
+            },
+            {
+                topic: "Teras Ajaran Rasulullah ﷺ",
+                q: "Dalam Khutbah Terakhir (Haji Wada'), apakah dua pusaka utama yang dipesan oleh baginda agar umat Islam sentiasa selamat dan tidak sesat selama-lamanya?",
+                options: ["Kitabullah (Al-Quran) dan Sunnah Nabi ﷺ", "Harta dan keturunan bangsawan", "Kekuasaan politik dan takhta", "Emas dan perak"],
+                ans: 0,
+                exp: "Rasulullah ﷺ berpesan: 'Aku tinggalkan kepada kamu dua perkara yang sekiranya kamu berpegang teguh kepadanya nescaya kamu tidak akan sesat selamanya: Kitabullah dan Sunnahku.'",
+                ref: "Muwatta' Imam Malik; Sahih Muslim"
+            }
+        ];
+
+        /* ==========================================================
+           3. STATE DAN PENGURUSAN PERMAINAN
+           ========================================================== */
+        const gameState = {
+            username: '',
+            currentIndex: 0,
+            score: 0,
+            lives: 3,
+            streak: 0,
+            correctCount: 0,
+            answered: false
+        };
+
+        // DOM Elements
+        const viewWelcome = document.getElementById('viewWelcome');
+        const viewGameplay = document.getElementById('viewGameplay');
+        const viewFinal = document.getElementById('viewFinal');
+        const viewLeaderboard = document.getElementById('viewLeaderboard');
+
+        const hudPlayerName = document.getElementById('hudPlayerName');
+        const hudScore = document.getElementById('hudScore');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const stageBadge = document.getElementById('stageBadge');
+
+        const questionTopic = document.getElementById('questionTopic');
+        const questionText = document.getElementById('questionText');
+        const streakBadge = document.getElementById('streakBadge');
+        const optionsContainer = document.getElementById('optionsContainer');
+
+        const feedbackBox = document.getElementById('feedbackBox');
+        const feedbackIcon = document.getElementById('feedbackIcon');
+        const feedbackTitle = document.getElementById('feedbackTitle');
+        const feedbackExplanation = document.getElementById('feedbackExplanation');
+        const feedbackSource = document.getElementById('feedbackSource');
+
+        const btnNext = document.getElementById('btnNext');
+        const btnNextText = document.getElementById('btnNextText');
+
+        // Butang & Input
+        const inputUsername = document.getElementById('inputUsername');
+        const nameError = document.getElementById('nameError');
+        const btnStart = document.getElementById('btnStart');
+        const btnSoundToggle = document.getElementById('btnSoundToggle');
+        const soundIcon = document.getElementById('soundIcon');
+
+        /* ==========================================================
+           4. EVENT LISTENERS & NAVIGATION
+           ========================================================== */
+        btnSoundToggle.addEventListener('click', () => {
+            audio.init();
+            audio.muted = !audio.muted;
+            if (audio.muted) {
+                soundIcon.className = 'fa-solid fa-volume-xmark text-emerald-600';
+            } else {
+                soundIcon.className = 'fa-solid fa-volume-high text-amber-400';
+            }
+        });
+
+        btnStart.addEventListener('click', () => {
+            audio.init();
+            const name = inputUsername.value.trim();
+            if (!name) {
+                nameError.classList.remove('hidden');
+                inputUsername.focus();
+                return;
+            }
+            nameError.classList.add('hidden');
+            gameState.username = name;
+            hudPlayerName.innerText = `Musafir: ${name}`;
+
+            // Reset status
+            gameState.currentIndex = 0;
+            gameState.score = 0;
+            gameState.lives = 3;
+            gameState.streak = 0;
+            gameState.correctCount = 0;
+            updateHud();
+
+            switchView('gameplay');
+            displayCurrentQuestion();
+        });
+
+        btnNext.addEventListener('click', () => {
+            audio.init();
+            audio.tap();
+            if (gameState.currentIndex < SIRAH_QUESTIONS.length - 1) {
+                gameState.currentIndex++;
+                displayCurrentQuestion();
+            } else {
+                finishGame();
+            }
+        });
+
+        function switchView(viewName) {
+            viewWelcome.classList.add('hidden');
+            viewGameplay.classList.add('hidden');
+            viewFinal.classList.add('hidden');
+            viewLeaderboard.classList.add('hidden');
+
+            if (viewName === 'welcome') viewWelcome.classList.remove('hidden');
+            if (viewName === 'gameplay') viewGameplay.classList.remove('hidden');
+            if (viewName === 'final') viewFinal.classList.remove('hidden');
+            if (viewName === 'leaderboard') viewLeaderboard.classList.remove('hidden');
+        }
+
+        function updateHud() {
+            hudScore.innerText = gameState.score;
+            document.getElementById('heart1').className = gameState.lives >= 1 ? 'fa-solid fa-heart' : 'fa-regular fa-heart opacity-25';
+            document.getElementById('heart2').className = gameState.lives >= 2 ? 'fa-solid fa-heart' : 'fa-regular fa-heart opacity-25';
+            document.getElementById('heart3').className = gameState.lives >= 3 ? 'fa-solid fa-heart' : 'fa-regular fa-heart opacity-25';
+
+            const total = SIRAH_QUESTIONS.length;
+            const currentNumber = gameState.currentIndex + 1;
+            progressText.innerText = `Soalan ${currentNumber} daripada ${total}`;
+            progressBar.style.width = `${(currentNumber / total) * 100}%`;
+            streakBadge.innerText = `🔥 Rentetan: ${gameState.streak}`;
+        }
+
+        /* ==========================================================
+           5. PAPARAN SOALAN & INTERAKSI JAWAPAN
+           ========================================================== */
+        function displayCurrentQuestion() {
+            gameState.answered = false;
+            feedbackBox.classList.add('hidden');
+            btnNext.classList.add('hidden');
+
+            const item = SIRAH_QUESTIONS[gameState.currentIndex];
+            questionTopic.innerText = item.topic;
+            questionText.innerText = item.q;
+            stageBadge.innerText = item.topic;
+
+            updateHud();
+
+            // Campurkan susunan jawapan
+            const optionsWithMeta = item.options.map((opt, idx) => ({
+                text: opt,
+                isCorrect: idx === item.ans
+            })).sort(() => Math.random() - 0.5);
+
+            optionsContainer.innerHTML = '';
+            optionsWithMeta.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = "w-full text-left p-3.5 rounded-xl bg-sirah-night/90 border border-sirah-gold/40 text-xs md:text-sm text-emerald-100 font-semibold active:border-amber-400 active:scale-[0.98] transition flex items-center space-x-2.5 shadow";
+                btn.innerHTML = `
+                    <span class="w-6 h-6 rounded-full bg-sirah-emeraldDark border border-sirah-gold/40 text-amber-300 flex items-center justify-center text-[10px] shrink-0">
+                        <i class="fa-solid fa-circle-dot"></i>
+                    </span>
+                    <span class="flex-1 leading-snug">${opt.text}</span>
+                `;
+
+                btn.addEventListener('click', () => {
+                    if (gameState.answered) return;
+                    handleAnswerSelection(opt, btn);
+                });
+
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswerSelection(chosenOption, chosenBtn) {
+            gameState.answered = true;
+            const item = SIRAH_QUESTIONS[gameState.currentIndex];
+
+            // Matikan semua butang pilihan
+            const allBtns = optionsContainer.querySelectorAll('button');
+            allBtns.forEach(b => b.classList.add('pointer-events-none'));
+
+            if (chosenOption.isCorrect) {
+                audio.correct();
+                gameState.score += 100 + (gameState.streak * 20);
+                gameState.streak++;
+                gameState.correctCount++;
+
+                chosenBtn.classList.remove('bg-sirah-night/90', 'border-sirah-gold/40');
+                chosenBtn.classList.add('bg-emerald-900/90', 'border-emerald-400', 'text-white', 'ring-2', 'ring-emerald-400/50');
+                chosenBtn.querySelector('span i').className = 'fa-solid fa-check text-emerald-300';
+
+                feedbackBox.className = "rounded-xl p-3 border border-emerald-400/80 bg-emerald-950/90 shadow-md space-y-1 block";
+                feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+                feedbackTitle.className = "text-xs font-bold text-emerald-300";
+                feedbackTitle.innerText = "Jawapan Tepat Sekali!";
+            } else {
+                audio.wrong();
+                gameState.streak = 0;
+                gameState.lives--;
+
+                chosenBtn.classList.remove('bg-sirah-night/90', 'border-sirah-gold/40');
+                chosenBtn.classList.add('bg-rose-950/90', 'border-rose-500', 'text-white', 'ring-2', 'ring-rose-500/50');
+                chosenBtn.querySelector('span i').className = 'fa-solid fa-xmark text-rose-300';
+
+                // Tunjukkan jawapan yang betul
+                allBtns.forEach(b => {
+                    if (b.innerText.includes(item.options[item.ans])) {
+                        b.classList.remove('bg-sirah-night/90', 'border-sirah-gold/40');
+                        b.classList.add('bg-emerald-950/70', 'border-emerald-500/70', 'text-emerald-200');
+                    }
+                });
+
+                feedbackBox.className = "rounded-xl p-3 border border-rose-500/80 bg-rose-950/90 shadow-md space-y-1 block";
+                feedbackIcon.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>`;
+                feedbackTitle.className = "text-xs font-bold text-rose-300";
+                feedbackTitle.innerText = "Jawapan Kurang Tepat";
+            }
+
+            feedbackExplanation.innerText = item.exp;
+            feedbackSource.innerText = `Rujukan Sahih: ${item.ref}`;
+            updateHud();
+
+            // Sediakan butang seterusnya
+            btnNext.classList.remove('hidden');
+            if (gameState.currentIndex === SIRAH_QUESTIONS.length - 1) {
+                btnNextText.innerText = "LIHAT KEPUTUSAN KEMBARA";
+            } else {
+                btnNextText.innerText = "SOALAN SETERUSNYA";
+            }
+
+            // Jika nyawa habis, reset nyawa tetapi tolak markah sedikit agar perjalanan tidak tersekat
+            if (gameState.lives <= 0) {
+                setTimeout(() => {
+                    gameState.lives = 3;
+                    gameState.score = Math.max(0, gameState.score - 50);
+                    updateHud();
+                }, 400);
+            }
+
+            btnNext.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        /* ==========================================================
+           6. TAMAT PERMAINAN & PAPAN MARKAH
+           ========================================================== */
+        function finishGame() {
+            audio.finish();
+            const total = SIRAH_QUESTIONS.length;
+            const accuracy = Math.round((gameState.correctCount / total) * 100);
+
+            document.getElementById('finalPlayerGreeting').innerText = `Syabas Musafir, ${gameState.username}!`;
+            document.getElementById('finalScore').innerText = gameState.score;
+            document.getElementById('finalAccuracy').innerText = `${accuracy}% (${gameState.correctCount}/${total})`;
+
+            let note = "Maha suci Allah! Pemahaman sirah anda sangat mantap dan menyeluruh. Teruskan meneladani akhlak junjungan mulia.";
+            if (accuracy < 60) {
+                note = "Usaha yang baik! Ulangi kembara ini sekali lagi untuk memantapkan pemahaman mengenai sejarah agung Rasulullah ﷺ.";
+            }
+            document.getElementById('finalNote').innerText = note;
+
+            saveScore(gameState.username, gameState.score, `${accuracy}%`);
+            switchView('final');
+        }
+
+        function saveScore(name, score, acc) {
+            try {
+                let list = JSON.parse(localStorage.getItem('kembara_sirah_simple_scores') || '[]');
+                list.push({
+                    name: name,
+                    score: score,
+                    accuracy: acc,
+                    date: new Date().toLocaleDateString('ms-MY')
+                });
+                list.sort((a, b) => b.score - a.score);
+                list = list.slice(0, 20);
+                localStorage.setItem('kembara_sirah_simple_scores', JSON.stringify(list));
+            } catch (e) {
+                console.error("Gagal simpan skor", e);
+            }
+        }
+
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboardList');
+            container.innerHTML = '';
+            let list = [];
+            try {
+                list = JSON.parse(localStorage.getItem('kembara_sirah_simple_scores') || '[]');
+            } catch (e) {
+                list = [];
+            }
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="p-4 rounded-xl bg-sirah-night/80 border border-emerald-900 text-center text-xs text-emerald-300">
+                        Belum ada musafir yang mencatat markah. Jadilah yang pertama!
+                    </div>
+                `;
+                return;
+            }
+
+            list.forEach((item, idx) => {
+                const isCurrent = (item.name === gameState.username && item.score === gameState.score);
+                const row = document.createElement('div');
+                row.className = `flex items-center justify-between p-2.5 rounded-xl border text-xs ${
+                    isCurrent 
+                    ? 'bg-amber-500/20 border-amber-400 text-white font-bold' 
+                    : 'bg-sirah-night/80 border-emerald-900 text-emerald-100'
+                }`;
+
+                let crown = `<span class="w-5 text-center font-bold text-amber-300">${idx + 1}</span>`;
+                if (idx === 0) crown = `<span class="w-5 text-center text-amber-400"><i class="fa-solid fa-crown"></i></span>`;
+
+                row.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        ${crown}
+                        <div>
+                            <span class="font-bold">${item.name}</span>
+                            <span class="text-[9px] text-emerald-400 block">${item.date} • Ketepatan: ${item.accuracy}</span>
+                        </div>
+                    </div>
+                    <div class="font-black text-amber-300 font-mono text-sm">
+                        ${item.score} <span class="text-[10px] font-normal text-emerald-300">mata</span>
+                    </div>
+                `;
+
+                container.appendChild(row);
+            });
+        }
+
+        // Leaderboard triggers
+        document.getElementById('btnViewLeaderboard').addEventListener('click', () => {
+            audio.tap();
+            renderLeaderboard();
+            switchView('leaderboard');
+        });
+
+        document.getElementById('btnShowBoardFromFinal').addEventListener('click', () => {
+            audio.tap();
+            renderLeaderboard();
+            switchView('leaderboard');
+        });
+
+        document.getElementById('btnCloseBoard').addEventListener('click', () => {
+            audio.tap();
+            if (gameState.currentIndex >= SIRAH_QUESTIONS.length - 1 && gameState.answered) {
+                switchView('final');
+            } else if (gameState.username) {
+                switchView('gameplay');
+            } else {
+                switchView('welcome');
+            }
+        });
+
+        document.getElementById('btnBackToGame').addEventListener('click', () => {
+            audio.tap();
+            if (gameState.currentIndex >= SIRAH_QUESTIONS.length - 1 && gameState.answered) {
+                switchView('final');
+            } else if (gameState.username) {
+                switchView('gameplay');
+            } else {
+                switchView('welcome');
+            }
+        });
+
+        document.getElementById('btnRestart').addEventListener('click', () => {
+            audio.tap();
+            switchView('welcome');
+        });
+
+        // Pengaktifan audio pada sentuhan pertama
+        window.addEventListener('touchstart', () => audio.init(), { once: true });
+        window.addEventListener('click', () => audio.init(), { once: true });
+    </script>
+</body>
+</html>

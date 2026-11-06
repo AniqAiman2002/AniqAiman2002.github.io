@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="ms" class="h-full select-none">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ANIQ RUNNER: EXPEDISI MINDA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            base: '#050711',
+                            card: '#0d1326',
+                            cyan: '#00f2fe',
+                            pink: '#ff007f',
+                            yellow: '#fcee0a',
+                            purple: '#7928ca'
+                        }
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 15px rgba(0, 242, 254, 0.6)',
+                        'neon-pink': '0 0 18px rgba(255, 0, 127, 0.7)',
+                        'neon-gold': '0 0 20px rgba(252, 238, 10, 0.7)'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+        :root {
+            --sat: env(safe-area-inset-top);
+            --sab: env(safe-area-inset-bottom);
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            background: #050711;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .font-arcade {
+            font-family: 'Orbitron', monospace;
+        }
+
+        /* Screen Shake Effect */
+        .screen-shake {
+            animation: shake 0.28s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-3px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        /* Fever Glow Border */
+        .fever-glow {
+            animation: pulseFever 0.7s infinite alternate;
+        }
+        @keyframes pulseFever {
+            0% { box-shadow: inset 0 0 25px #ff007f, 0 0 20px #00f2fe; }
+            100% { box-shadow: inset 0 0 35px #fcee0a, 0 0 30px #ff007f; }
+        }
+
+        /* Scanline Overlay */
+        .retro-scanlines {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+            background-size: 100% 3px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body id="appBody" class="w-full h-full flex flex-col justify-between text-white relative">
+
+    <!-- Retro CRT Scanline -->
+    <div class="absolute inset-0 retro-scanlines z-10"></div>
+
+    <!-- ================= TOP HEADER HUD ================= -->
+    <header class="relative z-20 w-full pt-[max(0.5rem,var(--sat))] px-3 pb-1 flex flex-col gap-1.5 bg-gradient-to-b from-cyber-base via-cyber-base/90 to-transparent">
+        
+        <!-- Bar Status Atas: Nama Game, Pause & Audio -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-400 to-indigo-600 flex items-center justify-center text-xs shadow-neon-cyan font-arcade font-black text-black">
+                    A
+                </div>
+                <div>
+                    <h1 class="text-xs font-black font-arcade tracking-wider bg-gradient-to-r from-cyan-300 via-pink-400 to-yellow-300 bg-clip-text text-transparent">
+                        ANIQ RUNNER
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Nyawa Pemain (3 Hati) -->
+            <div id="livesContainer" class="flex space-x-1 text-sm text-pink-500 drop-shadow-[0_0_8px_rgba(255,0,127,0.8)]">
+                <i id="heart1" class="fa-solid fa-heart"></i>
+                <i id="heart2" class="fa-solid fa-heart"></i>
+                <i id="heart3" class="fa-solid fa-heart"></i>
+            </div>
+
+            <!-- Audio & Rekod -->
+            <div class="flex items-center space-x-1.5">
+                <button id="btnSound" class="w-7 h-7 rounded-lg bg-slate-800/90 border border-cyan-400/30 text-cyan-300 flex items-center justify-center active:scale-90 transition">
+                    <i id="soundIcon" class="fa-solid fa-volume-high text-[11px]"></i>
+                </button>
+                <div class="px-2 py-0.5 rounded-lg bg-amber-400/10 border border-amber-400/30 text-amber-300 font-arcade text-[10px] flex items-center space-x-1">
+                    <i class="fa-solid fa-trophy text-[9px]"></i>
+                    <span id="topRecord">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kad Soalan Pembelajaran Utama (Sentiasa nampak jelas di telefon) -->
+        <div id="questionBanner" class="w-full bg-cyber-card/95 border border-cyan-400/40 rounded-xl p-2.5 shadow-lg backdrop-blur-md flex flex-col justify-center transition-transform">
+            <div class="flex items-center justify-between mb-1">
+                <span id="questionTopic" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                    MATEMATIK PANTAS
+                </span>
+                <!-- Multiplier & Streak -->
+                <div class="flex items-center space-x-1.5">
+                    <span id="feverTag" class="hidden px-1.5 py-0.2 rounded bg-pink-600 font-arcade font-black text-[9px] text-white animate-pulse">
+                        FEVER 2X
+                    </span>
+                    <span class="text-[10px] font-arcade text-yellow-300 font-bold">
+                        <i class="fa-solid fa-bolt text-yellow-400"></i> <span id="streakCount">0</span>x
+                    </span>
+                </div>
+            </div>
+            <p id="questionText" class="text-xs sm:text-sm font-extrabold text-white leading-snug line-clamp-2">
+                Pilih jawapan yang betul di lorong Aniq!
+            </p>
+        </div>
+    </header>
+
+    <!-- ================= RUNNER CANVAS (GAMEPLAY) ================= -->
+    <main id="canvasWrapper" class="relative flex-1 w-full overflow-hidden flex items-center justify-center">
+        <canvas id="runnerCanvas" class="w-full h-full block"></canvas>
+
+        <!-- Dynamic Feedback Pill (Betul/Salah) -->
+        <div id="feedbackPill" class="absolute top-4 pointer-events-none px-4 py-1.5 rounded-full text-xs font-arcade font-bold tracking-wider opacity-0 transform -translate-y-2 transition-all duration-200 z-20">
+            JAWAPAN TEPAT!
+        </div>
+
+        <!-- ================= MODAL: START SCREEN ================= -->
+        <div id="startScreen" class="absolute inset-0 z-30 bg-cyber-base/95 p-4 flex flex-col justify-between text-center backdrop-blur-md">
+            <div class="pt-4">
+                <span class="px-3 py-1 rounded-full text-[10px] font-arcade font-bold text-cyan-300 border border-cyan-400/40 bg-cyan-950/60 shadow-neon-cyan">
+                    EDISI MUDAH ALIH
+                </span>
+                <h2 class="mt-2 font-arcade font-black text-3xl tracking-tight bg-gradient-to-r from-cyan-300 via-pink-400 to-yellow-300 bg-clip-text text-transparent">
+                    ANIQ RUNNER
+                </h2>
+                <p class="text-[11px] text-slate-300 mt-1">Expedisi Minda & Refleks Pantas</p>
+            </div>
+
+            <!-- Avatar & Ringkasan Cara Main -->
+            <div class="my-auto space-y-3">
+                <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-tr from-cyan-400 to-pink-500 p-0.5 shadow-neon-cyan flex items-center justify-center">
+                    <div class="w-full h-full bg-cyber-card rounded-[14px] flex flex-col items-center justify-center">
+                        <span class="text-3xl animate-bounce">🚀</span>
+                        <span class="text-[9px] font-arcade font-black text-cyan-300">HERO ANIQ</span>
+                    </div>
+                </div>
+
+                <div class="bg-cyber-card border border-cyan-500/30 p-3 rounded-xl text-left text-[11px] text-slate-300 space-y-1 max-w-xs mx-auto shadow-md">
+                    <div class="font-bold text-cyan-300 mb-1 flex items-center">
+                        <i class="fa-solid fa-mobile-screen-button mr-1.5 text-pink-400"></i> Cara Main di Telefon:
+                    </div>
+                    <p>• Tekan <strong>Butang Kiri / Kanan</strong> di bawah skrin.</p>
+                    <p>• Atau <strong>Leret / Sentuh Lorong terus</strong> di atas skrin.</p>
+                    <p>• Kutip sfera jawapan yang tepat & capai 5 Streak untuk <strong>FEVER 2X</strong>!</p>
+                </div>
+            </div>
+
+            <div class="pb-[max(1rem,var(--sab))]">
+                <button id="btnStart" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 via-indigo-500 to-pink-500 text-black font-arcade font-black text-base shadow-neon-cyan active:scale-95 transition">
+                    MULA SEKARANG <i class="fa-solid fa-play ml-1 text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= MODAL: GAME OVER SCREEN ================= -->
+        <div id="gameOverScreen" class="absolute inset-0 z-30 bg-cyber-base/95 p-4 flex-col justify-between text-center backdrop-blur-md hidden">
+            <div class="pt-2">
+                <div id="endTrophy" class="text-4xl mb-0.5">👑</div>
+                <h3 id="endRank" class="font-arcade font-black text-xl text-yellow-300">LEGENDA ANIQ</h3>
+                <p class="text-[10px] text-cyan-300 font-bold tracking-wider uppercase">Misi Selesai</p>
+            </div>
+
+            <!-- Statistik -->
+            <div class="bg-cyber-card border border-cyan-400/30 rounded-xl p-3 my-auto space-y-2.5 max-w-xs mx-auto w-full">
+                <div class="grid grid-cols-2 gap-2 text-left">
+                    <div class="bg-slate-900/90 p-2 rounded-lg border border-white/5">
+                        <span class="text-[9px] text-slate-400 uppercase font-bold block">Mata Skor</span>
+                        <span id="endScore" class="font-arcade font-black text-lg text-yellow-300">0</span>
+                    </div>
+                    <div class="bg-slate-900/90 p-2 rounded-lg border border-white/5">
+                        <span class="text-[9px] text-slate-400 uppercase font-bold block">Rekod Terbaik</span>
+                        <span id="endBest" class="font-arcade font-black text-lg text-cyan-300">0</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-left">
+                    <div class="bg-slate-900/90 p-2 rounded-lg border border-white/5">
+                        <span class="text-[9px] text-slate-400 uppercase font-bold block">Betul</span>
+                        <span id="endTotalCorrect" class="font-arcade font-bold text-sm text-emerald-400">0</span>
+                    </div>
+                    <div class="bg-slate-900/90 p-2 rounded-lg border border-white/5">
+                        <span class="text-[9px] text-slate-400 uppercase font-bold block">Streak Max</span>
+                        <span id="endMaxStreak" class="font-arcade font-bold text-sm text-pink-400">0x</span>
+                    </div>
+                </div>
+                <!-- Mini Fact Review -->
+                <div class="text-[10px] text-left text-slate-300 bg-slate-950/60 p-2 rounded border border-white/5 line-clamp-2" id="lastFactReview">
+                    Teruskan berlatih untuk mengasah minda pantas bersama Aniq!
+                </div>
+            </div>
+
+            <div class="pb-[max(1rem,var(--sab))] space-y-2 max-w-xs mx-auto w-full">
+                <button id="btnPlayAgain" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-600 text-black font-arcade font-black text-sm shadow-neon-cyan active:scale-95 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>MAIN SEMULA</span>
+                </button>
+                <button id="btnShareMobile" class="w-full py-2.5 rounded-xl bg-cyber-card border border-cyan-400/40 text-cyan-300 font-bold text-xs active:scale-95 transition flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span id="shareStatusText">Salin Rekod Skor</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= GIANT MOBILE THUMB CONTROLS ================= -->
+    <footer class="relative z-20 w-full px-3 pb-[max(0.6rem,var(--sab))] pt-1 bg-gradient-to-t from-cyber-base via-cyber-base/95 to-transparent">
+        <div class="w-full flex items-center justify-between gap-2.5 max-w-md mx-auto">
+            <!-- Butang Kiri Gergasi -->
+            <button id="btnMobileLeft" class="flex-1 py-4 bg-cyber-card/90 border-2 border-cyan-400/60 active:bg-cyan-500/40 active:border-cyan-300 rounded-2xl flex items-center justify-center text-cyan-300 shadow-neon-cyan active:scale-95 transition">
+                <i class="fa-solid fa-chevron-left text-2xl"></i>
+                <span class="ml-2 font-arcade font-black text-sm">KIRI</span>
+            </button>
+
+            <!-- Skor Paparan Tengah -->
+            <div class="w-20 flex flex-col items-center justify-center">
+                <span class="text-[9px] uppercase tracking-wider font-bold text-cyan-300">SKOR</span>
+                <span id="currentScoreDisplay" class="font-arcade font-black text-lg text-yellow-300">0</span>
+            </div>
+
+            <!-- Butang Kanan Gergasi -->
+            <button id="btnMobileRight" class="flex-1 py-4 bg-cyber-card/90 border-2 border-cyan-400/60 active:bg-cyan-500/40 active:border-cyan-300 rounded-2xl flex items-center justify-center text-cyan-300 shadow-neon-cyan active:scale-95 transition">
+                <span class="mr-2 font-arcade font-black text-sm">KANAN</span>
+                <i class="fa-solid fa-chevron-right text-2xl"></i>
+            </button>
+        </div>
+    </footer>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        /* ==========================================================
+           1. SYNTHESIS WEB AUDIO SYSTEM (OPTIMIZED FOR MOBILE)
+           ========================================================== */
+        class MobileSynthAudio {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContextClass) this.ctx = new AudioContextClass();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playMove() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(260, now);
+                osc.frequency.exponentialRampToValueAtTime(520, now + 0.07);
+
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.07);
+            }
+
+            playCorrect() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+
+                    gain.gain.setValueAtTime(0.12, now + idx * 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.18);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + idx * 0.05);
+                    osc.stop(now + idx * 0.05 + 0.18);
+                });
+            }
+
+            playWrong() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.linearRampToValueAtTime(60, now + 0.22);
+
+                gain.gain.setValueAtTime(0.18, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.22);
+            }
+
+            playFever() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                [440, 554, 659, 880].forEach((f, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(f, now + i * 0.07);
+                    gain.gain.setValueAtTime(0.08, now + i * 0.07);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.15);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.07);
+                    osc.stop(now + i * 0.07 + 0.15);
+                });
+            }
+
+            playGameOver() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                [320, 260, 200, 140].forEach((f, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(f, now + i * 0.1);
+                    gain.gain.setValueAtTime(0.12, now + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.18);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.1);
+                    osc.stop(now + i * 0.1 + 0.18);
+                });
+            }
+        }
+
+        const sound = new MobileSynthAudio();
+
+        /* ==========================================================
+           2. SOALAN-SOALAN INTERAKTIF MINDA ANIQ
+           ========================================================== */
+        const QUESTIONS = [
+            // MATEMATIK PANTAS
+            { topic: 'Matematik Pantas', q: 'Berapakah: 14 × 5?', ans: '70', wrong: ['60', '75'], fact: '14 × 5 bersamaan 70.' },
+            { topic: 'Matematik Pantas', q: 'Berapakah nilai: 9² - 1?', ans: '80', wrong: ['81', '79'], fact: '9 × 9 = 81, tolak 1 menjadi 80.' },
+            { topic: 'Matematik Pantas', q: '20% daripada 150 ialah?', ans: '30', wrong: ['25', '35'], fact: '150 dibahagi 5 (20%) ialah 30.' },
+            { topic: 'Matematik Pantas', q: 'Selesaikan: 50 + 25 × 2?', ans: '100', wrong: ['150', '85'], fact: 'Dahulukan darab: 25 × 2 = 50, tambah 50 = 100.' },
+            { topic: 'Matematik Pantas', q: 'Nombor ganjil selepas 47 ialah?', ans: '49', wrong: ['48', '51'], fact: '49 ialah nombor ganjil yang seterusnya.' },
+
+            // SAINS & ALAM
+            { topic: 'Sains & Alam', q: 'Planet apakah yang digelar Planet Merah?', ans: 'Marikh', wrong: ['Zuhrah', 'Musytari'], fact: 'Marikh berwarna merah kerana kehadiran oksida besi di permukaannya.' },
+            { topic: 'Sains & Alam', q: 'Gas yang diserap oleh pokok untuk fotosintesis?', ans: 'Karbon Dioksida', wrong: ['Oksigen', 'Nitrogen'], fact: 'Tumbuhan menyerap karbon dioksida dan membebaskan oksigen.' },
+            { topic: 'Sains & Alam', q: 'Air mendidih pada suhu berapa darjah Celsius?', ans: '100°C', wrong: ['90°C', '120°C'], fact: 'Takat didih air pada tekanan atmosfera normal ialah 100°C.' },
+            { topic: 'Sains & Alam', q: 'Organ manusia yang mengepam darah ke seluruh badan?', ans: 'Jantung', wrong: ['Paru-paru', 'Hati'], fact: 'Jantung manusia mengepam kira-kira 5 liter darah setiap minit.' },
+
+            // BAHASA & KOSA KATA
+            { topic: 'Bahasa Melayu', q: 'Sinonim bagi perkataan "PANTAS":', ans: 'Cepat', wrong: ['Lambat', 'Lekas'], fact: 'Pantas bermaksud cepat dan tangkas.' },
+            { topic: 'Bahasa Melayu', q: 'Simpulan bahasa untuk "Sangat Rajin":', ans: 'Ringan Tulang', wrong: ['Berat Tulang', 'Kaki Ayam'], fact: 'Ringan tulang ialah kiasan untuk orang yang rajin bekerja.' },
+            { topic: 'Bahasa Melayu', q: 'Lengkapkan: Berat sama dipikul, ringan sama ______', ans: 'Dijinjing', wrong: ['Dibawa', 'Ditolak'], fact: 'Peribahasa ini mengajak masyarakat hidup bermuafakat.' },
+
+            // LOGIK & AM
+            { topic: 'Pengetahuan Am', q: 'Ibu negara Malaysia ialah?', ans: 'Kuala Lumpur', wrong: ['Putrajaya', 'Shah Alam'], fact: 'Kuala Lumpur ialah ibu negara rasmi Malaysia.' },
+            { topic: 'Pengetahuan Am', q: 'Berapakah bilangan jalur pada bendera Jalur Gemilang?', ans: '14 Jalur', wrong: ['13 Jalur', '15 Jalur'], fact: '14 jalur melambangkan 13 buah negeri dan 1 Wilayah Persekutuan.' }
+        ];
+
+        /* ==========================================================
+           3. CANVAS SETUP & GAME ENGINE
+           ========================================================== */
+        const canvas = document.getElementById('runnerCanvas');
+        const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById('canvasWrapper');
+        const appBody = document.getElementById('appBody');
+
+        // UI Element References
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const questionBanner = document.getElementById('questionBanner');
+        const questionTopic = document.getElementById('questionTopic');
+        const questionText = document.getElementById('questionText');
+        const currentScoreDisplay = document.getElementById('currentScoreDisplay');
+        const topRecord = document.getElementById('topRecord');
+        const streakCount = document.getElementById('streakCount');
+        const feverTag = document.getElementById('feverTag');
+        const feedbackPill = document.getElementById('feedbackPill');
+
+        // Buttons
+        const btnStart = document.getElementById('btnStart');
+        const btnPlayAgain = document.getElementById('btnPlayAgain');
+        const btnMobileLeft = document.getElementById('btnMobileLeft');
+        const btnMobileRight = document.getElementById('btnMobileRight');
+        const btnSound = document.getElementById('btnSound');
+        const soundIcon = document.getElementById('soundIcon');
+        const btnShareMobile = document.getElementById('btnShareMobile');
+        const shareStatusText = document.getElementById('shareStatusText');
+
+        let width = 0;
+        let height = 0;
+        let isRunning = false;
+        let animId = null;
+
+        // Player (Hero Aniq)
+        const hero = {
+            lane: 1, // 0: Kiri, 1: Tengah, 2: Kanan
+            x: 0,
+            targetX: 0,
+            y: 0,
+            radius: 24,
+            tilt: 0
+        };
+
+        // Permainan
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('aniq_runner_best') || '0', 10);
+        topRecord.innerText = highScore;
+
+        let lives = 3;
+        let streak = 0;
+        let maxStreak = 0;
+        let totalCorrect = 0;
+        let isFever = false;
+        let feverTimer = 0;
+
+        let currentQ = null;
+        let questionList = [];
+        let orbs = [];
+        let particles = [];
+        let roadOffset = 0;
+        let speed = 4.2;
+
+        /* ==========================================================
+           4. ADAPTIVE CANVAS RESIZING (MOBILE FULLSCREEN)
+           ========================================================== */
+        function initSize() {
+            const rect = wrapper.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 2); // limit to 2 for performance on mobile
+            width = rect.width;
+            height = rect.height;
+
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.scale(dpr, dpr);
+
+            hero.y = height - 70;
+            hero.targetX = getLanePos(hero.lane);
+            if (!isRunning) hero.x = hero.targetX;
+        }
+
+        window.addEventListener('resize', initSize);
+        window.addEventListener('orientationchange', () => setTimeout(initSize, 200));
+
+        function getLanePos(laneIndex) {
+            const laneW = width / 3;
+            return laneW * laneIndex + (laneW / 2);
+        }
+
+        /* ==========================================================
+           5. KAWALAN MUDAH ALIH (TAP & TOUCH GESTURES)
+           ========================================================== */
+        function moveHero(direction) {
+            if (!isRunning) return;
+            sound.init();
+
+            if (direction === 'left' && hero.lane > 0) {
+                hero.lane--;
+                hero.tilt = -0.3;
+                sound.playMove();
+                spawnSparks(hero.x + 10, hero.y + 20, '#00f2fe');
+            } else if (direction === 'right' && hero.lane < 2) {
+                hero.lane++;
+                hero.tilt = 0.3;
+                sound.playMove();
+                spawnSparks(hero.x - 10, hero.y + 20, '#00f2fe');
+            }
+            hero.targetX = getLanePos(hero.lane);
+        }
+
+        // Butang Sentuh Bawah
+        btnMobileLeft.addEventListener('touchstart', (e) => { e.preventDefault(); moveHero('left'); }, { passive: false });
+        btnMobileRight.addEventListener('touchstart', (e) => { e.preventDefault(); moveHero('right'); }, { passive: false });
+        btnMobileLeft.addEventListener('click', () => moveHero('left'));
+        btnMobileRight.addEventListener('click', () => moveHero('right'));
+
+        // Kawalan Sentuhan Terus di atas Kanvas (Ketuk Lorong Kiri/Kanan/Tengah atau Leret)
+        let touchDownX = 0;
+        let touchMoved = false;
+
+        canvas.addEventListener('touchstart', (e) => {
+            sound.init();
+            const touch = e.touches[0];
+            touchDownX = touch.clientX;
+            touchMoved = false;
+        }, { passive: true });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!touchDownX) return;
+            const diffX = e.touches[0].clientX - touchDownX;
+            if (Math.abs(diffX) > 30) {
+                if (diffX > 0) moveHero('right');
+                else moveHero('left');
+                touchDownX = e.touches[0].clientX;
+                touchMoved = true;
+            }
+        }, { passive: true });
+
+        canvas.addEventListener('touchend', (e) => {
+            // Jika hanya satu tap pantas pada skrin: tentukan lorong yang ditekan
+            if (!touchMoved) {
+                const rect = canvas.getBoundingClientRect();
+                const tapX = (e.changedTouches[0].clientX - rect.left);
+                const laneClicked = Math.floor((tapX / width) * 3);
+                if (laneClicked >= 0 && laneClicked <= 2 && laneClicked !== hero.lane) {
+                    if (laneClicked > hero.lane) moveHero('right');
+                    else moveHero('left');
+                }
+            }
+            touchDownX = 0;
+        }, { passive: true });
+
+        // Kawalan Papan Kekunci
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveHero('left');
+            if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveHero('right');
+        });
+
+        /* ==========================================================
+           6. SOALAN & SFERA JAWAPAN (SPAWNER)
+           ========================================================== */
+        function pickNextQuestion() {
+            if (questionList.length === 0) {
+                questionList = [...QUESTIONS].sort(() => Math.random() - 0.5);
+            }
+            currentQ = questionList.pop();
+
+            questionTopic.innerText = currentQ.topic;
+            questionText.innerText = currentQ.q;
+
+            // Efek pop pada kotak soalan
+            questionBanner.classList.add('scale-[1.02]');
+            setTimeout(() => questionBanner.classList.remove('scale-[1.02]'), 150);
+
+            spawnOrbs();
+        }
+
+        function spawnOrbs() {
+            orbs = [];
+            const laneConfig = [0, 1, 2].sort(() => Math.random() - 0.5);
+
+            // Orb Betul
+            orbs.push({
+                lane: laneConfig[0],
+                x: getLanePos(laneConfig[0]),
+                y: -35,
+                radius: 26,
+                text: currentQ.ans,
+                isCorrect: true,
+                color: '#00f2fe',
+                glow: 'rgba(0, 242, 254, 0.9)'
+            });
+
+            // Orb Salah 1 & 2
+            orbs.push({
+                lane: laneConfig[1],
+                x: getLanePos(laneConfig[1]),
+                y: -35,
+                radius: 26,
+                text: currentQ.wrong[0],
+                isCorrect: false,
+                color: '#ff007f',
+                glow: 'rgba(255, 0, 127, 0.8)'
+            });
+
+            orbs.push({
+                lane: laneConfig[2],
+                x: getLanePos(laneConfig[2]),
+                y: -35,
+                radius: 26,
+                text: currentQ.wrong[1],
+                isCorrect: false,
+                color: '#ff007f',
+                glow: 'rgba(255, 0, 127, 0.8)'
+            });
+        }
+
+        /* ==========================================================
+           7. SISTEM PARTIKEL & KESAN GEGARAN SKRIN
+           ========================================================== */
+        function triggerShake() {
+            appBody.classList.add('screen-shake');
+            setTimeout(() => appBody.classList.remove('screen-shake'), 300);
+        }
+
+        function spawnSparks(x, y, color, count = 15) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 1.5;
+                particles.push({
+                    x, y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    color: color,
+                    alpha: 1,
+                    radius: Math.random() * 3 + 1.5,
+                    decay: Math.random() * 0.04 + 0.03
+                });
+            }
+        }
+
+        function showPill(isCorrect, text) {
+            feedbackPill.innerText = text;
+            if (isCorrect) {
+                feedbackPill.className = "absolute top-4 pointer-events-none px-4 py-1.5 rounded-full text-xs font-arcade font-bold tracking-wider opacity-100 transform translate-y-0 bg-emerald-500/90 text-black border border-emerald-300 shadow-neon-cyan z-20 transition-all";
+            } else {
+                feedbackPill.className = "absolute top-4 pointer-events-none px-4 py-1.5 rounded-full text-xs font-arcade font-bold tracking-wider opacity-100 transform translate-y-0 bg-rose-600/90 text-white border border-rose-300 shadow-neon-pink z-20 transition-all";
+            }
+
+            setTimeout(() => {
+                feedbackPill.classList.remove('opacity-100', 'translate-y-0');
+                feedbackPill.classList.add('opacity-0', '-translate-y-2');
+            }, 1200);
+        }
+
+        /* ==========================================================
+           8. GELUNG PERMAINAN (UPDATE & DRAW)
+           ========================================================== */
+        function gameLoop() {
+            if (!isRunning) return;
+
+            update();
+            draw();
+
+            animId = requestAnimationFrame(gameLoop);
+        }
+
+        function update() {
+            // Pergerakan lancar Hero Aniq
+            hero.x += (hero.targetX - hero.x) * 0.25;
+            hero.tilt *= 0.82;
+
+            roadOffset = (roadOffset + (isFever ? 9 : 5.5)) % 40;
+
+            // Fever Mode Handler
+            if (isFever) {
+                feverTimer--;
+                if (feverTimer <= 0) {
+                    endFever();
+                }
+            }
+
+            // Hasilkan kesan zarah jet bawah
+            if (Math.random() > 0.4) {
+                particles.push({
+                    x: hero.x + (Math.random() - 0.5) * 12,
+                    y: hero.y + 20,
+                    vx: (Math.random() - 0.5) * 1.5,
+                    vy: Math.random() * 3 + 2,
+                    color: isFever ? '#fcee0a' : '#00f2fe',
+                    alpha: 0.8,
+                    radius: Math.random() * 2 + 1,
+                    decay: 0.08
+                });
+            }
+
+            // Kemas kini partikel
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= p.decay;
+                if (p.alpha <= 0) particles.splice(i, 1);
+            }
+
+            // Kemas kini sfera jawapan
+            let reachedBottom = false;
+            for (let i = orbs.length - 1; i >= 0; i--) {
+                const orb = orbs[i];
+                orb.y += (isFever ? speed * 1.25 : speed);
+
+                // Perlanggaran (Collision Check)
+                const dist = Math.hypot(orb.x - hero.x, orb.y - hero.y);
+                if (dist < orb.radius + hero.radius) {
+                    handleCollect(orb);
+                    orbs = [];
+                    reachedBottom = false;
+                    break;
+                }
+
+                if (orb.y > height + 40) {
+                    reachedBottom = true;
+                }
+            }
+
+            // Jika pemain tidak memilih apa-apa lorong dan terlepas
+            if (orbs.length > 0 && reachedBottom) {
+                handleMiss();
+            }
+        }
+
+        function handleCollect(orb) {
+            if (orb.isCorrect) {
+                sound.playCorrect();
+                streak++;
+                if (streak > maxStreak) maxStreak = streak;
+                totalCorrect++;
+
+                const pts = Math.round(100 * (isFever ? 2.0 : (streak >= 3 ? 1.5 : 1.0)));
+                score += pts;
+
+                currentScoreDisplay.innerText = score;
+                streakCount.innerText = streak;
+
+                spawnSparks(orb.x, orb.y, '#00f2fe', 22);
+                spawnSparks(orb.x, orb.y, '#fcee0a', 15);
+                showPill(true, `TEPAT! +${pts}`);
+
+                if (streak >= 5 && !isFever) {
+                    startFever();
+                }
+
+                if (totalCorrect % 4 === 0) {
+                    speed = Math.min(speed + 0.3, 7.5);
+                }
+
+                setTimeout(pickNextQuestion, 280);
+
+            } else {
+                sound.playWrong();
+                triggerShake();
+                streak = 0;
+                streakCount.innerText = '0';
+                if (isFever) endFever();
+
+                spawnSparks(orb.x, orb.y, '#ff007f', 25);
+                showPill(false, `SALAH! (${currentQ.ans})`);
+
+                reduceLife();
+                if (lives > 0) {
+                    setTimeout(pickNextQuestion, 450);
+                }
+            }
+        }
+
+        function handleMiss() {
+            sound.playWrong();
+            triggerShake();
+            streak = 0;
+            streakCount.innerText = '0';
+            showPill(false, "TERLEPAS!");
+            reduceLife();
+            if (lives > 0) {
+                pickNextQuestion();
+            }
+        }
+
+        function reduceLife() {
+            lives--;
+            updateHearts();
+            if (lives <= 0) {
+                endGame();
+            }
+        }
+
+        function updateHearts() {
+            document.getElementById('heart1').className = lives >= 1 ? 'fa-solid fa-heart' : 'fa-regular fa-heart opacity-25';
+            document.getElementById('heart2').className = lives >= 2 ? 'fa-solid fa-heart' : 'fa-regular fa-heart opacity-25';
+            document.getElementById('heart3').className = lives >= 3 ? 'fa-solid fa-heart' : 'fa-regular fa-heart opacity-25';
+        }
+
+        function startFever() {
+            isFever = true;
+            feverTimer = 340; // ~6 saat
+            sound.playFever();
+            feverTag.classList.remove('hidden');
+            wrapper.classList.add('fever-glow');
+        }
+
+        function endFever() {
+            isFever = false;
+            feverTag.classList.add('hidden');
+            wrapper.classList.remove('fever-glow');
+        }
+
+        /* ==========================================================
+           9. VISUAL RENDERING (CYBERPUNK NEON ARCADES)
+           ========================================================== */
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. Grid Lorong Futuristik
+            drawTrackLanes();
+
+            // 2. Partikel & Jejak Enjin
+            particles.forEach(p => {
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // 3. Sfera Jawapan
+            orbs.forEach(orb => {
+                drawOrb(orb);
+            });
+
+            // 4. Hero Aniq Rocket Cruiser
+            drawHero();
+        }
+
+        function drawTrackLanes() {
+            const laneW = width / 3;
+
+            // Garisan sempadan lorong bercahaya
+            ctx.lineWidth = 1.8;
+            for (let i = 1; i < 3; i++) {
+                const lx = laneW * i;
+                ctx.strokeStyle = isFever ? 'rgba(252, 238, 10, 0.45)' : 'rgba(0, 242, 254, 0.25)';
+                ctx.beginPath();
+                ctx.setLineDash([12, 14]);
+                ctx.moveTo(lx, -roadOffset);
+                ctx.lineTo(lx, height + 40);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // Grid melintang laju
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = isFever ? 'rgba(255, 0, 127, 0.25)' : 'rgba(0, 242, 254, 0.12)';
+            for (let y = roadOffset; y < height; y += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+        }
+
+        function drawOrb(orb) {
+            ctx.save();
+            ctx.translate(orb.x, orb.y);
+
+            // Aura Neon
+            const grad = ctx.createRadialGradient(0, 0, orb.radius * 0.3, 0, 0, orb.radius * 1.5);
+            grad.addColorStop(0, orb.color);
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(0, 0, orb.radius * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Badan Sfera
+            ctx.beginPath();
+            ctx.arc(0, 0, orb.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#0a1024';
+            ctx.fill();
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = orb.color;
+            ctx.stroke();
+
+            // Teks Jawapan
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const len = orb.text.length;
+            const fSize = len > 12 ? 9 : (len > 7 ? 11 : 13);
+            ctx.font = `800 ${fSize}px 'Plus Jakarta Sans', sans-serif`;
+            ctx.shadowColor = orb.color;
+            ctx.shadowBlur = 6;
+            ctx.fillText(orb.text, 0, 0);
+            ctx.shadowBlur = 0;
+
+            ctx.restore();
+        }
+
+        function drawHero() {
+            ctx.save();
+            ctx.translate(hero.x, hero.y);
+            ctx.rotate(hero.tilt);
+
+            // Cahaya Belakang Jet
+            const jetGrad = ctx.createRadialGradient(0, 20, 2, 0, 30, 18);
+            jetGrad.addColorStop(0, isFever ? '#fcee0a' : '#00f2fe');
+            jetGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = jetGrad;
+            ctx.beginPath();
+            ctx.arc(0, 24, 18, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Kapal Aerodinamik ANIQ
+            ctx.fillStyle = '#0a1022';
+            ctx.strokeStyle = isFever ? '#fcee0a' : '#00f2fe';
+            ctx.lineWidth = 2.5;
+
+            ctx.beginPath();
+            ctx.moveTo(0, -26);       // Depan
+            ctx.lineTo(22, 18);       // Sayap kanan
+            ctx.lineTo(10, 14);       // Lekuk kanan
+            ctx.lineTo(0, 18);        // Ekor
+            ctx.lineTo(-10, 14);      // Lekuk kiri
+            ctx.lineTo(-22, 18);      // Sayap kiri
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Kokpit
+            ctx.beginPath();
+            ctx.ellipse(0, -3, 7, 11, 0, 0, Math.PI * 2);
+            ctx.fillStyle = isFever ? '#ff007f' : '#00f2fe';
+            ctx.fill();
+
+            // Nama Hero "ANIQ"
+            ctx.fillStyle = '#ffffff';
+            ctx.font = "900 9px 'Orbitron', monospace";
+            ctx.textAlign = 'center';
+            ctx.shadowColor = '#00f2fe';
+            ctx.shadowBlur = 8;
+            ctx.fillText("ANIQ", 0, -30);
+            ctx.shadowBlur = 0;
+
+            ctx.restore();
+        }
+
+        /* ==========================================================
+           10. STATE MANAGERS & SHARING
+           ========================================================== */
+        btnStart.addEventListener('click', () => {
+            sound.init();
+            startGame();
+        });
+
+        btnPlayAgain.addEventListener('click', () => {
+            sound.init();
+            startGame();
+        });
+
+        function startGame() {
+            score = 0;
+            lives = 3;
+            streak = 0;
+            maxStreak = 0;
+            totalCorrect = 0;
+            speed = 4.2;
+            isFever = false;
+            particles = [];
+
+            updateHearts();
+            currentScoreDisplay.innerText = '0';
+            streakCount.innerText = '0';
+
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            gameOverScreen.classList.remove('flex');
+
+            initSize();
+            pickNextQuestion();
+
+            isRunning = true;
+            cancelAnimationFrame(animId);
+            gameLoop();
+        }
+
+        function endGame() {
+            isRunning = false;
+            sound.playGameOver();
+
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('aniq_runner_best', highScore);
+                topRecord.innerText = highScore;
+            }
+
+            let rank = "PENJELAJAH ANIQ";
+            let trophy = "🚀";
+
+            if (score >= 2000) {
+                rank = "LEGENDA ANIQ";
+                trophy = "👑";
+            } else if (score >= 1200) {
+                rank = "MASTER MINDA ANIQ";
+                trophy = "🏆";
+            } else if (score >= 600) {
+                rank = "JAGUH ILMU ANIQ";
+                trophy = "⭐";
+            }
+
+            document.getElementById('endTrophy').innerText = trophy;
+            document.getElementById('endRank').innerText = rank;
+            document.getElementById('endScore').innerText = score;
+            document.getElementById('endBest').innerText = highScore;
+            document.getElementById('endTotalCorrect').innerText = `${totalCorrect}`;
+            document.getElementById('endMaxStreak').innerText = `${maxStreak}x`;
+
+            if (currentQ) {
+                document.getElementById('lastFactReview').innerHTML = `💡 <strong>Fakta:</strong> ${currentQ.fact}`;
+            }
+
+            gameOverScreen.classList.remove('hidden');
+            gameOverScreen.classList.add('flex');
+        }
+
+        // Togol Audio
+        btnSound.addEventListener('click', () => {
+            sound.init();
+            sound.muted = !sound.muted;
+            if (sound.muted) {
+                soundIcon.className = "fa-solid fa-volume-xmark text-[11px] text-slate-500";
+            } else {
+                soundIcon.className = "fa-solid fa-volume-high text-[11px] text-cyan-400";
+            }
+        });
+
+        // Salin Skor Kongsi (Mesra Telefon)
+        btnShareMobile.addEventListener('click', () => {
+            sound.init();
+            const text = `🚀 ANIQ RUNNER: Saya peroleh ${score} mata dengan gelaran [${document.getElementById('endRank').innerText}]! Bolehkah anda kalahkan rekod Aniq?`;
+            
+            const dummy = document.createElement('textarea');
+            dummy.value = text;
+            document.body.appendChild(dummy);
+            dummy.select();
+            try {
+                document.execCommand('copy');
+                shareStatusText.innerText = "Tersalin ke Telefon!";
+                setTimeout(() => shareStatusText.innerText = "Salin Rekod Skor", 2000);
+            } catch (err) {
+                shareStatusText.innerText = "Gagal menyalin";
+            }
+            document.body.removeChild(dummy);
+        });
+
+        // Inisialisasi awal
+        window.addEventListener('load', () => {
+            initSize();
+        });
+    </script>
+</body>
+</html>
